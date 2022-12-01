@@ -1,0 +1,12 @@
+name: squatjump_project
+channels:
+  - defaults
+dependencies:
+  - matplotlib=3.5.3
+  - numpy=1.21.5
+  - pandas=1.3.5
+  - pip=22.2.2
+  - plotly=5.9.0
+  - python=3.7.15
+  - streamlit=1.11.0
+prefix: /Users/Walker/opt/anaconda3/envs/squatjump_project
