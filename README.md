@@ -14,5 +14,8 @@ Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../s
 3. data : Contains data files of jumps collected from Force Plates
 4. pages -> 2_About.py : Contains About Page code
 5. .streamlit -> config.toml : Configuration information (Theme) for dashboard
+6. environment.yml : virtual environment libraries
+7. preProcess.py : A python file containing helper functions used by process_data.py to clean and pre-process read data.
+8. process_data.py : A python file containing functions to calculate important jump metrics.
 
 **Team Members**: Andrew Ba, Seoyeon Hong, Walker Azam, John Cheng
