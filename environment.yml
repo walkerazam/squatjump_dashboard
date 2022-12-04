@@ -9,4 +9,5 @@ dependencies:
   - plotly=5.9.0
   - python=3.7.15
   - streamlit=1.11.0
+  - scipy=1.7.3
 prefix: /Users/Walker/opt/anaconda3/envs/squatjump_project

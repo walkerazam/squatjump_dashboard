@@ -7,6 +7,7 @@ Home.py
 import streamlit as st
 import pandas as pd
 from squat_jump_utils import groundforce_plot, create_COP_plot
+from process_data import process_data
 
 # Page Configurations
 st.set_page_config(
@@ -25,15 +26,35 @@ if uploaded_file is not None:
     # Reading in Data File as df
     df = pd.read_csv(uploaded_file, header=6)
 
+    # Retrieve processed data, index, and calculations
+    processed_data, index_df, calculations_df = process_data(df)
+
     # Reporting calculated Metrics:
     st.write("""## Jump Metrics:""")
+
+    # Asking which jump to view:
+    selected_jump = st.radio("Select which patient jump to View:",
+                             ('1', '2', '3'))
     # Seperating into columns for display
     col1, col2, col3 = st.columns(3)
-    # TODO: Fill in with calculations
-    col1.metric("Jump Time", "4 sec", help='Starts from beginning of loading' +
+    col1.metric("Jump Time",
+                calculations_df.loc[int(selected_jump), 'jump_time(s)'],
+                help='Starts from beginning of loading' +
                 '/eccentric phase and ends when patient is in the air')
-    col2.metric("Eccentric Phase Time", "9 sec")
-    col3.metric("Concentric Phase Time", "9 sec")
+    col2.metric("Eccentric Phase Time",
+                calculations_df.loc[int(selected_jump), 'ecce_time(s)'])
+    col3.metric("Concentric Phase Time",
+                calculations_df.loc[int(selected_jump), 'conc_time(s)'])
+
+    # Creating a Selectbox for Table View
+    table_view = st.selectbox(
+        "View Metric's Table?",
+        ('No', 'Yes'))
+    # Conditionals
+    if table_view == 'Yes':
+        st.table(calculations_df.iloc[:, 1:])
+    else:
+        pass
 
     # Asking if a plot for groundforce should be made
     st.write("## Plots of Ground Force by Leg")
