@@ -3,9 +3,9 @@ This repository contains files used to create the Squat Jump dashboard for CSE 5
 
 ### How to Launch (Locally):
 
-Please ensure you have `streamlit` installed and other necessary libraries (`pandas`, `numpy`, `matplotlib`, and `plotly`)
+Please ensure you have `streamlit` installed and other necessary libraries (`pandas`, `numpy`, `matplotlib`, `scipy`, and `plotly`). Please check environment.yml to check for all necessary libraries and versions!
 
-Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../squatjump_dashboard)
+Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../squatjump_dashboard) to locally launch dashboard.
 
 ### Files:
 
@@ -17,5 +17,6 @@ Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../s
 6. environment.yml : virtual environment libraries
 7. preProcess.py : A python file containing helper functions used by process_data.py to clean and pre-process read data.
 8. process_data.py : A python file containing functions to calculate important jump metrics.
+9. test_squat_jump_utils.py : File contains unittests for squat_jump_utils.py. Can be run in root directory calling `python -m unittest`.
 
 **Team Members**: Andrew Ba, Seoyeon Hong, Walker Azam, John Cheng
