@@ -107,11 +107,11 @@ def create_COP_plot(df):
             label=str(5 * i))
         step["args"][0]["visible"][i] = True
         steps.append(step)
-    sliders = [dict(
-        active=0,
-        currentvalue={"prefix": "Time: ", "suffix": " seconds"},
-        pad={"t": 5},
-        steps=steps
-    )]
+#    sliders = [dict(
+#       active=0,
+#        currentvalue={"prefix": "Time: ", "suffix": " seconds"},
+#        pad={"t": 5},
+#        steps=steps
+#    )]
 
     return fig
