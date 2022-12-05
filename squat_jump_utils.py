@@ -23,7 +23,11 @@ def groundforce_plot(df, dir):
     Return:
         1. fig: figure of ground force jump in passed direction.
     """
-    # split left and right legs
+    # Run DF check:
+    check_data(df)
+    check_direction(dir)
+
+    # Split left and right legs
     right_cols = [x for x in list(df.columns) if '1' in x]
     right_cols.append('time')
     left_cols = [x for x in list(df.columns) if '2' in x]
@@ -56,6 +60,9 @@ def create_COP_plot(df):
     Return:
         1. fig: An interactive Plotly figure for COP data.
     """
+    # Run DF Check:
+    check_data(df)
+
     # Creating df for plotting center of pressure:
     center_pressure_left = df[['time', 'ground_force1_px',
                                'ground_force1_py',
@@ -115,3 +122,51 @@ def create_COP_plot(df):
 #    )]
 
     return fig
+
+
+# Helper functions below:
+def check_data(df):
+    """
+    This function checks that the passed dataframe has the correct shape
+    (19 columns) since forceplate outputs are consistent.
+    Arguments:
+        1. df: Patient forceplate data containing variable rows,
+            but having set 19 columns.
+    Return:
+        RaiseError if not correct shape or not a pandas dataframe.
+    """
+    # Raise Errors based on correct types of data passed:
+    if (type(df) is pd.DataFrame) is False:
+        raise ValueError('Data type received for "data" must be a pandas ' +
+                         'DataFrame. Instead recieved data type ' +
+                         str(type(df)))
+    # Raise Errors if there are not 3 columns in the dataset:
+    elif df.shape[1] != 19:
+        raise ValueError('Data shape passed has wrong number of columns. ' +
+                         'Expected to have 19 columns instead got ' +
+                         str(df.shape[1]) + ' columns.')
+    # Raise error is there are missing values:
+    elif df.isna().sum().sum() >= 1:
+        raise ValueError('Data contains missing values!')
+    else:
+        return None
+
+
+def check_direction(dir):
+    """
+    This function checks that the direction input is
+    either 'x', 'y', or 'z'. Else raises error!
+    Arguments:
+        1. dir: string value of either x, y, or z.
+    Return:
+        RaiseError if not string or an accepted direction.
+    """
+    # Raise Errors based on correct types of direction passed:
+    if (type(dir) is str) is False:
+        raise ValueError('Direction passed is not accepted!')
+    # Raise Errors if direction is not x, y or z:
+    elif (dir in ['x', 'y', 'z']) is False:
+        raise ValueError('Direction passed can only be ' +
+                         'x, y, or z.')
+    else:
+        return None
