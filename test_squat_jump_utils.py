@@ -9,7 +9,7 @@ import unittest
 from squat_jump_utils import groundforce_plot, create_COP_plot
 
 
-# defining the TestCase class from unittest module
+# Defining the TestCase class from unittest module
 class Test_Squat_Jump_Utils(unittest.TestCase):
 
     def test_df(self):
