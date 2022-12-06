@@ -114,14 +114,47 @@ def create_COP_plot(df):
             label=str(5 * i))
         step["args"][0]["visible"][i] = True
         steps.append(step)
-#    sliders = [dict(
-#       active=0,
-#        currentvalue={"prefix": "Time: ", "suffix": " seconds"},
-#        pad={"t": 5},
-#        steps=steps
-#    )]
 
     return fig
+
+
+def metric_viewer(calculations_df):
+    """
+    This function creates a metric table output to be viewed in
+    Streamlit.
+    Arguments:
+        1. calculations_df: a dataframe containing metric calculations,
+            as output from process_data.py function process_data
+    Return:
+        1. metric_df: a dataframe of metrics in a format easy to view
+            through streamlit.
+    """
+    metric_df = calculations_df.copy()  # Creating a copy
+    # Updating column names to more readable:
+    metric_names = [
+        "weight(kg)",
+        "Jump Height (cm)",
+        "Takeoff Velocity (m/s)",
+        "Rate of Velocity Acceleration (m/s^3)",
+        "Jump Time (s)",
+        "Eccentric Time (s)",
+        "Concentric Time (s)",
+        "Peak Force (N)",
+        "Peak Power (W)",
+        "Average Concentric Power (W)",
+        "Squat Depth (cm)",
+        "Left Leg COP Displacement(cm) [Ant.-Post.]",
+        "Right Leg COP Displacement(cm) [Ant.-Post.]",
+        "Left Leg COP Displacement(cm) [Med.-Lat.]",
+        "Right Leg COP Displacement(cm) [Med.-Lat.]"
+    ]
+    # Renaming columns
+    metric_df.columns = metric_names
+    # Transposing to better show table
+    metric_df = metric_df.iloc[:, 1:].T
+    # Renaming columns
+    metric_df.columns = ['Jump 1', 'Jump 2', 'Jump 3']
+    return metric_df
 
 
 # Helper functions below:

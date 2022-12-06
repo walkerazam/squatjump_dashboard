@@ -6,7 +6,9 @@ Home.py
 """
 import streamlit as st
 import pandas as pd
+import numpy as np
 from squat_jump_utils import groundforce_plot, create_COP_plot
+from squat_jump_utils import metric_viewer
 from process_data import process_data
 
 # Page Configurations
@@ -28,6 +30,9 @@ if uploaded_file is not None:
 
     # Retrieve processed data, index, and calculations
     processed_data, index_df, calculations_df = process_data(df)
+
+    st.metric("Patient's Weight (Kg)",
+              np.round(calculations_df.loc[1, 'weight(kg)'], 2))
 
     # Reporting calculated Metrics:
     st.write("""## Jump Metrics:""")
@@ -52,12 +57,8 @@ if uploaded_file is not None:
         ('No', 'Yes'))
     # Conditionals
     if table_view == 'Yes':
-        metric_df = calculations_df.copy()  # Creating a copy
-        # Transposing to better show table
-        metric_df = metric_df.iloc[:, 1:].T
-        # Renaming columns
-        metric_df.columns = ['Jump 1', 'Jump 2', 'Jump 3']
-        # Displaying
+        metric_df = metric_viewer(calculations_df)
+        # Displaying table
         st.table(metric_df)
     else:
         pass
