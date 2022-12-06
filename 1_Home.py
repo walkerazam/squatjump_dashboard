@@ -52,7 +52,13 @@ if uploaded_file is not None:
         ('No', 'Yes'))
     # Conditionals
     if table_view == 'Yes':
-        st.table(calculations_df.iloc[:, 1:])
+        metric_df = calculations_df.copy()  # Creating a copy
+        # Transposing to better show table
+        metric_df = metric_df.iloc[:, 1:].T
+        # Renaming columns
+        metric_df.columns = ['Jump 1', 'Jump 2', 'Jump 3']
+        # Displaying
+        st.table(metric_df)
     else:
         pass
 
