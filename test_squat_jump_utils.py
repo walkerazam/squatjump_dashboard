@@ -12,7 +12,7 @@ from squat_jump_utils import groundforce_plot, create_COP_plot
 # Defining the TestCase class from unittest module
 class Test_Squat_Jump_Utils(unittest.TestCase):
 
-    def test_df(self):
+    def test_df_shape(self):
         """
         This function checks that the groundforce_plot &
         create_COP_plot
@@ -25,6 +25,16 @@ class Test_Squat_Jump_Utils(unittest.TestCase):
         # Check for a value error:
         with self.assertRaises(ValueError):
             groundforce_plot(df, 'x')
+
+    def test_df_cols(self):
+        """
+        This function checks that the groundforce_plot &
+        create_COP_plot
+        functions returns errors when passed df with incorrect data
+        shape.
+        """
+        # Initiate values (random DF with 4 columns):
+        df = pd.DataFrame(np.random.randn(100, 4), columns=list('ABCD'))
 
         # Check for a value error:
         with self.assertRaises(ValueError):
