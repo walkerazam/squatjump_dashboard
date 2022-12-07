@@ -309,10 +309,12 @@ def jumpSquatPreProcess(data):
         else:
             velocity = np.append(velocity, vel_segment)
             position = np.append(position, pos_segment)
+
+    data = data[0:c4_cutoff]
     data['bodyvel_y'] = velocity
     data['bodypos_y'] = position
 
-    data = data[0:c4_cutoff]
+    
 
     index_pd = {'Jump 1 Start': [evt1_s, ecc1_s, con1_s, ecc1_s, contact_2[0]],
                 'Jump 1 End': [evt1_e, con1_s, contact_1[1],
