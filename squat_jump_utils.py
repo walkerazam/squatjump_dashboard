@@ -7,8 +7,12 @@ squat_jump_utils.py
 """
 import pandas as pd
 import numpy as np
+
 import plotly.express as px
+import plotly.graph_objs as go
+
 import matplotlib.pyplot as plt
+
 import streamlit as st
 
 
@@ -170,7 +174,7 @@ def check_data(df):
     """
     # Raise Errors based on correct types of data passed:
     if (type(df) is pd.DataFrame) is False:
-        raise ValueError('Data type received for "data" must be a pandas ' +
+        raise TypeError('Data type received for "data" must be a pandas ' +
                          'DataFrame. Instead recieved data type ' +
                          str(type(df)))
     # Raise Errors if there are not 3 columns in the dataset:
@@ -196,10 +200,42 @@ def check_direction(dir):
     """
     # Raise Errors based on correct types of direction passed:
     if (type(dir) is str) is False:
-        raise ValueError('Direction passed is not accepted!')
+        raise TypeError('Direction passed is not accepted!')
     # Raise Errors if direction is not x, y or z:
     elif (dir in ['x', 'y', 'z']) is False:
         raise ValueError('Direction passed can only be ' +
                          'x, y, or z.')
+    else:
+        return None
+
+def check_plotly_output(fig):
+    """
+    This function checks if the resulting figure made by Plotly is the right type.
+    Arguments:
+        1. fig: Figure created using Plotly
+    Return:
+        RaiseError if not correct type (plotly.graph_objs._figure.Figure).
+    """
+    # Raise Errors output is unexpected type:
+    if type(fig) != go._figure.Figure:
+        raise TypeError('Output figure type must be a plotly figure ' +
+                         'Instead returned figure type ' +
+                         str(type(fig)))
+    else:
+        return None
+
+def check_matplotlib_output(fig):
+    """
+    This function checks if the resulting figure made by Matplotlib is the right type.
+    Arguments:
+        1. fig: Figure created using Matplotlib
+    Return:
+        RaiseError if not correct type (matplotlib.figure.Figure).
+    """
+    # Raise Errors output is unexpected type:
+    if type(fig) !=  plt.Figure:
+        raise TypeError('Output figure type must be a matplotlib figure ' +
+                         'Instead returned figure type ' +
+                         str(type(fig)))
     else:
         return None
