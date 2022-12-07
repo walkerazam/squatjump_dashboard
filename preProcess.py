@@ -309,7 +309,8 @@ def jumpSquatPreProcess(data):
         else:
             velocity = np.append(velocity, vel_segment)
             position = np.append(position, pos_segment)
-
+    data['bodyvel_y'] = velocity
+    data['bodypos_y'] = position
 
     data = data[0:c4_cutoff]
 
@@ -331,6 +332,7 @@ def jumpSquatPreProcess(data):
     preProcessedData = data
 
     return preProcessedData, index_pd, weight
+
 
 def butter_filter(column, cutoff, fs, order):
     """
