@@ -1,23 +1,23 @@
-import pandas as pd
 import numpy as np
-# from scipy import integrate
-from scipy.signal import butter, filtfilt
+import pandas as pd
+from scipy import integrate 
+from scipy.signal import butter,filtfilt
 
 
 def jumpSquatPreProcess(data):
-    '''
+    """
     This function takes in a passed dataframe of patient jumps
     and does pre-processing/cleaning required to calculate jump
     metrics. It returns the cleaned data, along with indexes
     for time (s) per jump phase, and the patient's mass.
 
     Arguments:
-        1. data: the squatjump dataframe containing jump data
+        1. data: the raw squat jump dataframe containing jump data
     Returns:
         1. preProcessedData: pre-processed/cleaned dataframe
         2. index_pd: jump indexes
         3. weight: patient mass/weight
-    '''
+    """
     # Drop unused columns
     data = data.drop(['ground_force1_py',
                       'ground_torque1_x',
@@ -28,23 +28,14 @@ def jumpSquatPreProcess(data):
                       'ground_torque2_y',
                       'ground_torque2_z'], axis=1)
 
-    # Filter Data Using Butter
-    def butter_lowpass_filter(data, cutoff, fs, order):
-        '''
-        Butter
-        '''
-        nyq = 0.5 * fs
-        normal_cutoff = cutoff / nyq
-        # Get the filter coefficients 
-        b, a = butter(order, normal_cutoff, btype='low', analog=False)
-        y = filtfilt(b, a, data)
-        return y
 
+    # Filter Data Using Butter
     for col_name in data.columns:
         if '_v' in col_name:
-            data[col_name] = butter_lowpass_filter(data[col_name], 5, 1000, 4)
+            data[col_name] = butter_filter(data[col_name], 5, 1000, 4)
         else:
             pass
+
 
     # Add Total Vertical Force Columns
     data['ground_force_totaly'] = data['ground_force1_vy'] + \
@@ -89,6 +80,7 @@ def jumpSquatPreProcess(data):
         data['ground_force2_vy'][in_air[0]:in_air[1]] = 0.0
         data['ground_force_totaly'][in_air[0]:in_air[1]] = 0.0
 
+
     # Add relative ground angles
     xz1 = data['ground_force1_vx'] ** 2 + data['ground_force1_vz'] ** 2
     xz2 = data['ground_force2_vx'] ** 2 + data['ground_force2_vz'] ** 2
@@ -110,6 +102,7 @@ def jumpSquatPreProcess(data):
     data['ground_force2_angle'] = ground_force2_angle
     data['ground_force1_angle'] = data['ground_force1_angle'].fillna(0)
     data['ground_force2_angle'] = data['ground_force2_angle'].fillna(0)
+
 
     # Derive Vertical Force
     dt = data['time'][1] - data['time'][0]
@@ -294,7 +287,30 @@ def jumpSquatPreProcess(data):
 
     evt3_e = c4t2f[-1]
 
-    # Integrate
+    # Derive Acceleration, velocity and position by segment
+    data['bodyacc_y'] = data['ground_force_totaly']/(weight) - 9.81
+
+    if contact_1[0] == evt1_s:
+        index_list = [evt1_s, evt1_e, evt2_s, evt2_e, evt3_s, evt3_e, 
+                        c4_cutoff]
+    else:
+        index_list = [contact_1[0], evt1_s, evt1_e, evt2_s, evt2_e, 
+                        evt3_s, evt3_e, c4_cutoff]
+
+    velocity = []
+    position = []
+    for ii in range(len(index_list)-1):
+        acc_segment = data['bodyacc_y'][index_list[ii]:index_list[ii+1]]
+        vel_segment = integrate.cumtrapz(acc_segment, dx = dt, initial = 0)
+        pos_segment = integrate.cumtrapz(vel_segment,dx = dt, initial = 0)
+        if ii == 0:
+            velocity = vel_segment
+            position = pos_segment
+        else:
+            velocity = np.append(velocity, vel_segment)
+            position = np.append(position, pos_segment)
+
+
     data = data[0:c4_cutoff]
 
     index_pd = {'Jump 1 Start': [evt1_s, ecc1_s, con1_s, ecc1_s, contact_2[0]],
@@ -315,3 +331,27 @@ def jumpSquatPreProcess(data):
     preProcessedData = data
 
     return preProcessedData, index_pd, weight
+
+def butter_filter(column, cutoff, fs, order):
+    """
+    This function filters data using a lowpass butter filter
+
+    Arguments:
+        1. column: column from main dataframe
+        2. cutoff: Freq for filtered values (int)
+        3. fs: Freq of the orginal/raw data column (int)
+        4. order: magnitude of filter used (int)
+    Returns:
+        1. filtered_column: column with butter filter applied 
+    """
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq 
+
+    # butter function from scipy creates butter filter
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    # filtfilt function from scipy applies butter
+    filtered_column = filtfilt(b, a, column)
+    return filtered_column
+
+
+
