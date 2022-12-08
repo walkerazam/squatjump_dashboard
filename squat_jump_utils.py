@@ -285,6 +285,34 @@ def metric_viewer(calculations_df):
     return metric_df
 
 
+def split_by_jump(df, index, jump):
+    """
+    This function splits the processed dataframe of jumps and
+    splits it by jump (1, 2 or 3).
+    Arguments:
+        1. df: the processed jump dataframe containing time.
+        2. index: the index dataframe output from process_data.py
+        3. jump: an int being either 1, 2 or 3 representing which
+            jump to find.
+    Return:
+        1. jump_df: the dataframe containing values only for a given
+            jump.
+    """
+    # Creating masks for passed jumps
+    if jump == 1:
+        mask1 = df['time'] >= (index['Jump 1 Start'][0]/1000)
+        mask2 = df['time'] <= (index['Jump 1 End'][0]/1000)
+    elif jump == 2:
+        mask1 = df['time'] >= (index['Jump 2 Start'][0]/1000)
+        mask2 = df['time'] <= (index['Jump 2 End'][0]/1000)
+    else:
+        mask1 = df['time'] >= (index['Jump 3 Start'][0]/1000)
+        mask2 = df['time'] <= (index['Jump 3 End'][0]/1000)
+    # Filtering
+    jump_df = df[mask1 & mask2]
+    return jump_df
+
+
 # Helper functions below:
 def check_data(df):
     """
