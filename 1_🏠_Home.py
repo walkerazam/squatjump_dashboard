@@ -138,5 +138,106 @@ if uploaded_file is not None:
         mime='text/csv',
     )
 
+# TRYING 3D Plot
+    import matplotlib.pyplot as plt
+    import matplotlib
+    from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib.animation import FuncAnimation
+    from squat_jump_utils import split_by_jump
+    import streamlit.components.v1 as components
+
+    def create_center_pressure_df(df):
+        """Creates a dataframe for visualization when given a path to the raw data file
+        (Currently the file format is assumed to be identical to BFR007_3d_vectors.csv)"""
+
+        if 'Unnamed: 0' in df.columns:
+            df = df.drop('Unnamed: 0', axis = 1)
+
+        center_pressure_left = df[['time', 'ground_force2_pz', 'ground_force2_px', 'ground_force2_vz', \
+                               'ground_force2_vx', 'ground_force2_vy']].copy()
+        center_pressure_left.rename(columns = {'ground_force2_pz' : 'ground_force_pt1x',
+                                               'ground_force2_px' : 'ground_force_pt1y',
+                                               'ground_force2_vz' : 'ground_force_pt2x',
+                                               'ground_force2_vx' : 'ground_force_pt2y',
+                                               'ground_force2_vy' : 'ground_force_pt2z'
+                                                }, inplace = True)
+        center_pressure_left['ground_force_pt1z'] = [0]*len(center_pressure_left)
+        center_pressure_left['Position'] = ['left']*len(center_pressure_left)
+
+        center_pressure_right = df[['time', 'ground_force1_pz', 'ground_force1_px', 'ground_force1_vz', \
+                                    'ground_force1_vx', 'ground_force1_vy']].copy()
+        center_pressure_right.rename(columns = {'ground_force1_pz' : 'ground_force_pt1x',
+                                                'ground_force1_px' : 'ground_force_pt1y',
+                                                'ground_force2_vz' : 'ground_force_pt2x',
+                                                'ground_force2_vx' : 'ground_force_pt2y',
+                                                'ground_force2_vy' : 'ground_force_pt2z'
+                                                 }, inplace = True)
+        center_pressure_right['ground_force_pt1z'] = [0]*len(center_pressure_left)
+        center_pressure_right['Position'] = ['right']*len(center_pressure_right)
+
+        center_pressure = pd.concat([center_pressure_left, center_pressure_right], axis = 0, ignore_index = True)
+        center_pressure.sort_values(by = "time", inplace = True)
+
+        return center_pressure
+
+    df = processed_data.copy()
+    df = create_center_pressure_df(df)
+    df = split_by_jump(df, index_df, 1)
+    df = df[df['Position'] == 'left']
+    df = df.reset_index(drop = True)
+
+    fig, ax = plt.subplots(subplot_kw = dict(projection="3d"))
+
+    # Colorbar initiation
+    norm = matplotlib.colors.Normalize()
+    norm.autoscale(df['ground_force_pt2z'])
+    cm = matplotlib.cm.cool
+    sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
+    sm.set_array([])
+
+    def get_arrow(idx):
+        x = 0
+        y = 0
+        z = 0
+        u = df['ground_force_pt2x'][idx]
+        v = df['ground_force_pt2y'][idx]
+        w = df['ground_force_pt2z'][idx]
+        return x, y, z, u, v, w
+
+    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][0])))
+
+    ax.set_title('3D Force Plot')
+
+    ax.set_xlabel('X Axis')
+    ax.set_xlim(min(list(df.ground_force_pt1x) + \
+                    list(df.ground_force_pt2x)) - 1,
+                max(list(df.ground_force_pt1x) + \
+                    list(df.ground_force_pt2x)) + 1)
+
+    ax.set_ylabel('Y Axis')
+    ax.set_ylim(min(list(df.ground_force_pt1y) + \
+                    list(df.ground_force_pt2y)) - 1,
+                max(list(df.ground_force_pt1y) + \
+                    list(df.ground_force_pt2y)) + 1)
+
+    ax.set_zlabel('Z Axis')
+    ax.set_zlim(min(list(df.ground_force_pt1z) + \
+                    list(df.ground_force_pt2z)),
+                max(list(df.ground_force_pt1z) + \
+                    list(df.ground_force_pt2z)) + 1)
+
+    def update(idx):
+        global quiver
+        quiver.remove()
+        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][idx])))
+
+    # anim = FuncAnimation(fig, update, frames = len(df), interval = 0.3)
+    anim = FuncAnimation(fig, update, frames = range(0, len(df), 4), interval = 1)
+
+    plt.colorbar(sm, location='bottom', label='Force (N)')
+
+    components.html(anim.to_jshtml(), height = 1000)
+
+
 else:
     st.caption("Please Upload a File Above")
