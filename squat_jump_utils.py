@@ -11,7 +11,9 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objs as go
 
+import matplotlib # TODO: narrow down module for color map
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 import streamlit as st
 
@@ -192,7 +194,7 @@ def create_3D_force_plot(df, position = 'left'):
         quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][idx])))
 
     global anim
-    anim = FuncAnimation(fig, update, frames = len(df), interval = 0.001, blit = False)
+    anim = animation.FuncAnimation(fig, update, frames = len(df), interval = 0.001, blit = False)
 
     plt.colorbar(sm, location = 'bottom', label = 'Force (N)')
 
