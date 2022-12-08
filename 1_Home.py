@@ -58,8 +58,18 @@ if uploaded_file is not None:
     # Conditionals
     if table_view == 'Yes':
         metric_df = metric_viewer(calculations_df)
-        # Displaying table
-        st.table(metric_df)
+        # Displaying table with select rows
+        st.table(metric_df.loc[["Jump Height (cm)",
+                                "Takeoff Velocity (m/s)",
+                                "Eccentric Loading Rate (N/s)",
+                                "Jump Time (s)",
+                                "Eccentric Time (s)",
+                                "Concentric Time (s)",
+                                "Peak Force (N)",
+                                "Left Leg COP Displacement(cm) [Ant.-Post.]",
+                                "Right Leg COP Displacement(cm) [Ant.-Post.]",
+                                "Left Leg COP Displacement(cm) [Med.-Lat.]",
+                                "Right Leg COP Displacement(cm) [Med.-Lat.]"]])
     else:
         pass
 
@@ -127,7 +137,6 @@ if uploaded_file is not None:
         file_name='jump_metrics.csv',
         mime='text/csv',
     )
-
 
 else:
     st.caption("Please Upload a File Above")
