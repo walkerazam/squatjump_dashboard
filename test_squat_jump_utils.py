@@ -6,6 +6,7 @@ test_squat_jump_utils.py
 import numpy as np
 import pandas as pd
 import unittest
+import plotly.graph_objs as go
 from squat_jump_utils import groundforce_plot, create_COP_plot
 
 
@@ -51,3 +52,14 @@ class Test_Squat_Jump_Utils(unittest.TestCase):
         # Check for a value error:
         with self.assertRaises(ValueError):
             groundforce_plot(df, 'a')
+
+    def check_plotly_output(self):
+        """
+        This function checks if the COP plot function
+        using Plotly returns the expected type.
+        """
+        # read sample csv for testing
+        df = pd.read_csv('/data/BFR003_squat_jump.csv')
+        
+        # Raise Errors output is unexpected type:
+        self.assert isinstance(create_COP_plot(df), go._figure.Figure)

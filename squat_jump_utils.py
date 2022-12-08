@@ -296,22 +296,22 @@ def check_direction(dir):
         return None
 
 
-def check_plotly_output(fig):
-    """
-    This function checks if the resulting figure made by Plotly is
-    the right type.
-    Arguments:
-        1. fig: Figure created using Plotly
-    Return:
-        RaiseError if not correct type (plotly.graph_objs._figure.Figure).
-    """
-    # Raise Errors output is unexpected type:
-    if type(fig) != go._figure.Figure:
-        raise TypeError('Output figure type must be a plotly figure ' +
-                        'Instead returned figure type ' +
-                        str(type(fig)))
-    else:
-        return None
+# def check_plotly_output(fig):
+#     """
+#     This function checks if the resulting figure made by Plotly is
+#     the right type.
+#     Arguments:
+#         1. fig: Figure created using Plotly
+#     Return:
+#         RaiseError if not correct type (plotly.graph_objs._figure.Figure).
+#     """
+#     # Raise Errors output is unexpected type:
+#     if type(fig) != go._figure.Figure:
+#         raise TypeError('Output figure type must be a plotly figure ' +
+#                         'Instead returned figure type ' +
+#                         str(type(fig)))
+#     else:
+#         return None
 
 
 def check_matplotlib_output(fig):
