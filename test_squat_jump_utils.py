@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import unittest
 import plotly.graph_objs as go
-from squat_jump_utils import groundforce_plot, create_COP_plot
+from squat_jump_utils import groundforce_plot, create_COP_plot, check_plotly_output
 
 
 # Defining the TestCase class from unittest module
@@ -60,6 +60,6 @@ class Test_Squat_Jump_Utils(unittest.TestCase):
         """
         # read sample csv for testing
         df = pd.read_csv('/data/BFR003_squat_jump.csv')
-        
+
         # Raise Errors output is unexpected type:
         self.assert isinstance(create_COP_plot(df), go._figure.Figure)

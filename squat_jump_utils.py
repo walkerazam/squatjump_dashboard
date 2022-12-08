@@ -123,7 +123,7 @@ def create_COP_plot(df):
         step["args"][0]["visible"][i] = True
         steps.append(step)
 
-    check_plotly_output(fig)
+    # check_plotly_output(fig)
 
     return fig
 
