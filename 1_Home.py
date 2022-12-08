@@ -8,7 +8,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from squat_jump_utils import groundforce_plot, create_COP_plot
-from squat_jump_utils import metric_viewer
+from squat_jump_utils import metric_viewer, create_plot_vs_time
 from process_data import process_data
 
 # Page Configurations
@@ -82,6 +82,21 @@ if uploaded_file is not None:
     else:
         # If none selected, print a message
         st.caption("None Selected...")
+
+    st.write("## Jump Plots:")
+    options = st.multiselect(
+        'What metrics would you like to visualize?',
+        ['Position', 'Velocity', 'Acceleration'])
+    if options is None:
+        st.caption("None Selected")
+    else:
+        for option in options:
+            if option == 'Position':
+                st.pyplot(create_plot_vs_time(processed_data, 'bodypos_y'))
+            elif option == 'Velocity':
+                st.pyplot(create_plot_vs_time(processed_data, 'bodyvel_y'))
+            else:
+                st.pyplot(create_plot_vs_time(processed_data, 'bodyacc_y'))
 
     st.write("## Plotting Center of Pressure:")
 

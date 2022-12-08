@@ -7,7 +7,8 @@ import numpy as np
 import pandas as pd
 import unittest
 import plotly.graph_objs as go
-from squat_jump_utils import groundforce_plot, create_COP_plot, create_COP_plot
+from squat_jump_utils import groundforce_plot, create_COP_plot
+from squat_jump_utils import create_plot_vs_time
 
 
 # Defining the TestCase class from unittest module
@@ -59,8 +60,19 @@ class Test_Squat_Jump_Utils(unittest.TestCase):
         using Plotly returns the expected type.
         """
         # read sample csv for testing
-        df = pd.read_csv('/data/BFR003_squat_jump.csv')
+        df = pd.read_csv('/data/BFR003_squat_jump.csv', header=6)
         # error message in case if test case fails
         message = "Return object should be a Plotly figure"
         # assertIsInstance() to check if obj is instance of class
         self.assertIsInstance(create_COP_plot(df), go._figure.Figure, message)
+
+    def test_column_name(self):
+        """
+        This function checks that if passed incorrect column name
+        a error is thrown.
+        """
+        # read sample csv for testing
+        df = pd.read_csv('/data/BFR003_squat_jump.csv', header=6)
+        # Check for a value error with incorrect column name:
+        with self.assertRaises(ValueError):
+            create_plot_vs_time(df, 'time')

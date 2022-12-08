@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 import plotly.express as px
-import plotly.graph_objs as go
+# import plotly.graph_objs as go
 
 import matplotlib  # TODO: narrow down module for color map
 import matplotlib.pyplot as plt
@@ -54,6 +54,42 @@ def groundforce_plot(df, dir):
     ax.set_ylabel("Force (N)")
     ax.legend()
 
+    return fig
+
+
+def create_plot_vs_time(df, column):
+    """
+    This function creates a plot for acceleration/
+    velocity/position against time. It takes in
+    the dataframe containing processed squat jump data
+    from process_data.py, and also a column name
+    and returns the appropriate figure.
+    Arguments:
+        1. df: Squat Jump Dataframe from process_data.
+        2. column: 'bodyacc_y', 'bodyvel_y', or
+            'bodypos_y' representing column names.
+    Return:
+        1. fig: figure of column passed against time.
+    """
+    # Running a check
+    check_plot_col_names(column)
+
+    fig, ax = plt.subplots()
+    ax.plot(df['time'], df[column], color='#4B2E83')
+    ax.set_facecolor("#F8F9FF")
+    # For passed column, create appropriate labels
+    if column == 'bodyacc_y':
+        ax.set_title("Jump Acceleration")
+        ax.set_ylabel("Acceleration (m/s^2)")
+    elif column == 'bodyvel_y':
+        ax.set_title("Jump Velocity")
+        ax.set_ylabel("Velocity (m/s)")
+    else:
+        # If not velocity or acceleration, then position
+        ax.set_title("Jump Position")
+        ax.set_ylabel("Position (m)")
+    ax.set_xlabel("Time (s)")
+    # Returning figure
     return fig
 
 
@@ -328,5 +364,22 @@ def check_matplotlib_output(fig):
         raise TypeError('Output figure type must be a matplotlib figure ' +
                         'Instead returned figure type ' +
                         str(type(fig)))
+    else:
+        return None
+
+
+def check_plot_col_names(column):
+    """
+    This function checks that the passed column name for the
+    plot against time function is valid.
+    Arguments:
+        1. column: A passed column name. Can be bodypos_y,
+            bodyacc_y, or bodyvel_y.
+    Return:
+        RaiseError if not correct accepted column name.
+    """
+    # Raise Errors output is unexpected type:
+    if column not in ['bodyacc_y', 'bodyvel_y', 'bodypos_y']:
+        raise ValueError('Passed Column Name is not Valid.')
     else:
         return None
