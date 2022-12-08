@@ -131,6 +131,7 @@ def create_3D_force_plot(df, position = 'left'):
     a figure.
     Arguments:
         1. df: Dataframe of squat jump data from force plates.
+        2. position: position of leg to plot the jumps. Values either 'left' or 'right'
     Return:
         1. fig: An interactive 3D figure for force data.
     """
