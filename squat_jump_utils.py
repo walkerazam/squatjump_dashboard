@@ -12,7 +12,7 @@ import plotly.express as px
 # import plotly.graph_objs as go
 
 import matplotlib.colors as colors
-import matplotlib.cm as cm
+import matplotlib.cm as colormap
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
@@ -191,8 +191,8 @@ def create_3D_force_plot(df, position='left'):
     # Colorbar initiation
     norm = colors.Normalize()
     norm.autoscale(df['ground_force_pt2z'])
-    cm = cm.cool
-    sm = cm.ScalarMappable(cmap=cm, norm=norm)
+    cm = colormap.cool
+    sm = colormap.ScalarMappable(cmap=cm, norm=norm)
     sm.set_array([])
 
     def get_arrow(idx):
