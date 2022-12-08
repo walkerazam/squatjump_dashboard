@@ -71,8 +71,8 @@ class Test_Squat_Jump_Utils(unittest.TestCase):
         This function checks that if passed incorrect column name
         a error is thrown.
         """
-        # read sample csv for testing
-        df = pd.read_csv('/data/BFR003_squat_jump.csv', header=6)
+        # Initiate values (random DF with 19 columns):
+        df = pd.DataFrame(np.random.randn(100, 19))
         # Check for a value error with incorrect column name:
         with self.assertRaises(ValueError):
             create_plot_vs_time(df, 'time')
