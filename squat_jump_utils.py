@@ -46,10 +46,12 @@ def groundforce_plot(df, dir):
     ax.plot(right_df['time'], right_df[column_names[0]], alpha=0.5,
             label='Right')
     ax.plot(left_df['time'], left_df[column_names[1]], alpha=0.5, label='Left')
+
     ax.set_title("Ground Force in the Axis: " + str.upper(dir))
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Force (N)")
     ax.legend()
+
     return fig
 
 
@@ -118,6 +120,8 @@ def create_COP_plot(df):
             label=str(5 * i))
         step["args"][0]["visible"][i] = True
         steps.append(step)
+
+    check_plotly_output(fig)
 
     return fig
 
