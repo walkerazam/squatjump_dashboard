@@ -28,11 +28,53 @@ def process_data(data):
         3. calculations - calculation results of each jump
     """
 
+    # Exception for time column check
+    if 'time' not in data:
+        raise Exception('[time] column is missing in data')
+    time_list = list(data['time'])
+    data_length = len(time_list)
+    for i in range(data_length):
+        if time_list[i] != i / 1000:
+            raise Exception('time frame is discontinuous'
+                            ' or not in millisecond')
+
+    # Exception for row number check
+    if data_length < 3000:
+        raise Exception('data size is less than 3000 rows')
+    if data_length > 30000:
+        raise Exception('data size is large than 50000 rows')
+
+    # Exceptions for column name check
+    if 'ground_force1_vx' not in data:
+        raise Exception('[ground_force1_vx] column is missing in data')
+    if 'ground_force1_vy' not in data:
+        raise Exception('[ground_force1_vy] column is missing in data')
+    if 'ground_force1_vz' not in data:
+        raise Exception('[ground_force1_vz] column is missing in data')
+    if 'ground_force1_px' not in data:
+        raise Exception('[ground_force2_px] column is missing in data')
+    if 'ground_force1_py' not in data:
+        raise Exception('[ground_force2_py] column is missing in data')
+    if 'ground_force1_pz' not in data:
+        raise Exception('[ground_force2_pz] column is missing in data')
+    if 'ground_force2_vx' not in data:
+        raise Exception('[ground_force2_vx] column is missing in data')
+    if 'ground_force2_vy' not in data:
+        raise Exception('[ground_force2_vy] column is missing in data')
+    if 'ground_force2_vz' not in data:
+        raise Exception('[ground_force2_vz] column is missing in data')
+    if 'ground_force2_px' not in data:
+        raise Exception('[ground_force2_px] column is missing in data')
+    if 'ground_force2_py' not in data:
+        raise Exception('[ground_force2_py] column is missing in data')
+    if 'ground_force2_pz' not in data:
+        raise Exception('[ground_force2_pz] column is missing in data')
+
     # Creating a Processed Data Object
     processed_data = ProcessData(data)
 
-    # Calling functions to get dataframes of processed data, indexes,
-    # and calculation results
+    # Calling functions to get dataframes of processed data,
+    #   indexes, and calculation results
     data = processed_data.get_data()
     index = processed_data.get_index()
     calculations = processed_data.get_calculations()
@@ -191,7 +233,7 @@ class ProcessData:
             vel: take-off velocity (m/s)
         """
         max_velocity = -99999
-        max_index = 0
+        max_idx = 0
         start = self.event_start
         end = self.landing
 
@@ -199,17 +241,16 @@ class ProcessData:
         for i in range(start, end):
             if self.velocity_list[i] > max_velocity:
                 max_velocity = self.velocity_list[i]
-                max_index = i
+                max_idx = i
 
         # Find a constant slop after the peak to find the start point
         #   where the patient is on the air
         cutoff_rate = 0.001
-        vel = self.velocity_list[max_index]
-        vel_slope = self.velocity_list[max_index] - \
-            self.velocity_list[max_index - 1]
+        vel = self.velocity_list[max_idx]
+        vel_slope = self.velocity_list[max_idx]-self.velocity_list[max_idx-1]
         count = 0
 
-        for j in range(max_index + 1, len(self.velocity_list)):
+        for j in range(max_idx + 1, len(self.velocity_list)):
             vel_cur = self.velocity_list[j]
             vel_cur_slope = self.velocity_list[j] - self.velocity_list[j - 1]
 
