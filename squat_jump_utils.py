@@ -11,7 +11,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objs as go
 
-import matplotlib # TODO: narrow down module for color map
+import matplotlib  # TODO: narrow down module for color map
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
@@ -55,6 +55,7 @@ def groundforce_plot(df, dir):
     ax.legend()
 
     return fig
+
 
 @st.cache
 def create_COP_plot(df):
@@ -126,14 +127,16 @@ def create_COP_plot(df):
 
     return fig
 
-def create_3D_force_plot(df, position = 'left'):
+
+def create_3D_force_plot(df, position='left'):
     """
     This function creates an interactive 3D force plot using
     Matplotlib FuncAnimation. It takes in the read jump dataframe and returns
     a figure.
     Arguments:
         1. df: Dataframe of squat jump data from force plates.
-        2. position: position of leg to plot the jumps. Values either 'left' or 'right'
+        2. position: position of leg to plot the jumps. Values either
+            'left' or 'right'
     Return:
         1. fig: An interactive 3D figure for force data.
     """
@@ -143,10 +146,10 @@ def create_3D_force_plot(df, position = 'left'):
     else:
         df = df[df['Position'] == 'right']
 
-    df = df.reset_index(drop = True)
+    df = df.reset_index(drop=True)
 
 #     global fig, ax
-    fig, ax = plt.subplots(subplot_kw = dict(projection="3d"))
+    fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
 
     # Colorbar initiation
     norm = matplotlib.colors.Normalize()
@@ -166,41 +169,45 @@ def create_3D_force_plot(df, position = 'left'):
         return x, y, z, u, v, w
 
 #     global quiver
-    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][0])))
+    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio=0.05,
+                       color=cm(norm(df['ground_force_pt2z'][0])))
 
     ax.set_title(f'3D Force Plot (Position: {position})')
 
     ax.set_xlabel('X Axis')
-    ax.set_xlim(min(list(df.ground_force_pt1x) + \
+    ax.set_xlim(min(list(df.ground_force_pt1x) +
                     list(df.ground_force_pt2x)) - 1,
-                max(list(df.ground_force_pt1x) + \
+                max(list(df.ground_force_pt1x) +
                     list(df.ground_force_pt2x)) + 1)
 
     ax.set_ylabel('Y Axis')
-    ax.set_ylim(min(list(df.ground_force_pt1y) + \
+    ax.set_ylim(min(list(df.ground_force_pt1y) +
                     list(df.ground_force_pt2y)) - 1,
-                max(list(df.ground_force_pt1y) + \
+                max(list(df.ground_force_pt1y) +
                     list(df.ground_force_pt2y)) + 1)
 
     ax.set_zlabel('Z Axis')
-    ax.set_zlim(min(list(df.ground_force_pt1z) + \
+    ax.set_zlim(min(list(df.ground_force_pt1z) +
                     list(df.ground_force_pt2z)),
-                max(list(df.ground_force_pt1z) + \
+                max(list(df.ground_force_pt1z) +
                     list(df.ground_force_pt2z)) + 1)
 
     def update(idx):
         global quiver
         quiver.remove()
-        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][idx])))
+        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio=0.05,
+                           color=cm(norm(df['ground_force_pt2z'][idx])))
 
     global anim
-    anim = animation.FuncAnimation(fig, update, frames = len(df), interval = 0.001, blit = False)
+    anim = animation.FuncAnimation(fig, update, frames=len(df),
+                                   interval=0.001, blit=False)
 
-    plt.colorbar(sm, location = 'bottom', label = 'Force (N)')
+    plt.colorbar(sm, location='bottom', label='Force (N)')
 
     plt.show()
 
     return anim
+
 
 def metric_viewer(calculations_df):
     """
@@ -219,7 +226,7 @@ def metric_viewer(calculations_df):
         "weight(kg)",
         "Jump Height (cm)",
         "Takeoff Velocity (m/s)",
-        "Rate of Velocity Acceleration (m/s^3)",
+        "Eccentric Loading Rate (N/s)",
         "Jump Time (s)",
         "Eccentric Time (s)",
         "Concentric Time (s)",
@@ -255,8 +262,8 @@ def check_data(df):
     # Raise Errors based on correct types of data passed:
     if (type(df) is pd.DataFrame) is False:
         raise TypeError('Data type received for "data" must be a pandas ' +
-                         'DataFrame. Instead recieved data type ' +
-                         str(type(df)))
+                        'DataFrame. Instead recieved data type ' +
+                        str(type(df)))
     # Raise Errors if there are not 3 columns in the dataset:
     elif df.shape[1] != 19:
         raise ValueError('Data shape passed has wrong number of columns. ' +
@@ -288,9 +295,11 @@ def check_direction(dir):
     else:
         return None
 
+
 def check_plotly_output(fig):
     """
-    This function checks if the resulting figure made by Plotly is the right type.
+    This function checks if the resulting figure made by Plotly is
+    the right type.
     Arguments:
         1. fig: Figure created using Plotly
     Return:
@@ -299,23 +308,25 @@ def check_plotly_output(fig):
     # Raise Errors output is unexpected type:
     if type(fig) != go._figure.Figure:
         raise TypeError('Output figure type must be a plotly figure ' +
-                         'Instead returned figure type ' +
-                         str(type(fig)))
+                        'Instead returned figure type ' +
+                        str(type(fig)))
     else:
         return None
 
+
 def check_matplotlib_output(fig):
     """
-    This function checks if the resulting figure made by Matplotlib is the right type.
+    This function checks if the resulting figure made by Matplotlib is
+    the right type.
     Arguments:
         1. fig: Figure created using Matplotlib
     Return:
         RaiseError if not correct type (matplotlib.figure.Figure).
     """
     # Raise Errors output is unexpected type:
-    if type(fig) !=  plt.Figure:
+    if type(fig) != plt.Figure:
         raise TypeError('Output figure type must be a matplotlib figure ' +
-                         'Instead returned figure type ' +
-                         str(type(fig)))
+                        'Instead returned figure type ' +
+                        str(type(fig)))
     else:
         return None
