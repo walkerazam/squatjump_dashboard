@@ -31,7 +31,8 @@ def process_data(data):
     # Creating a Processed Data Object
     processed_data = ProcessData(data)
 
-    # Calling functions to get dataframes of processed data, indexes, and calculation results
+    # Calling functions to get dataframes of processed data, indexes,
+    # and calculation results
     data = processed_data.get_data()
     index = processed_data.get_index()
     calculations = processed_data.get_calculations()
@@ -128,10 +129,12 @@ class ProcessData:
         """
         # Creating a empty DF with columns
         cal_result = pd.DataFrame(columns=['weight(kg)', 'jump_height(cm)',
-                                           'takeoff_v(m/s)', 'rate_of_v_acce(m/s^3)',
+                                           'takeoff_v(m/s)',
+                                           'rate_of_v_acce(m/s^3)',
                                            'jump_time(s)', 'ecce_time(s)',
                                            'conc_time(s)', 'peak_force(N)',
-                                           'peak_power(W)', 'avg_power_conc(W)',
+                                           'peak_power(W)',
+                                           'avg_power_conc(W)',
                                            'squat_depth(cm)',
                                            'cop_displace_right_x(cm)',
                                            'cop_displace_left_x(cm)',
@@ -148,7 +151,8 @@ class ProcessData:
             height, vel = self.height_by_v()
             cal_result.at[i, 'jump_height(cm)'] = height
             cal_result.at[i, 'takeoff_v(m/s)'] = vel
-            cal_result.at[i, 'rate_of_v_acce(m/s^3)'] = self.rate_of_force_ecce()
+            cal_result.at[i,
+                          'rate_of_v_acce(m/s^3)'] = self.rate_of_force_ecce()
             cal_result.at[i, 'jump_time(s)'] \
                 = (self.conc_end - self.ecce_start) / 1000
             cal_result.at[i, 'ecce_time(s)'] \
@@ -202,7 +206,7 @@ class ProcessData:
         cutoff_rate = 0.001
         vel = self.velocity_list[max_index]
         vel_slope = self.velocity_list[max_index] - \
-                    self.velocity_list[max_index - 1]
+            self.velocity_list[max_index - 1]
         count = 0
 
         for j in range(max_index + 1, len(self.velocity_list)):
@@ -210,8 +214,9 @@ class ProcessData:
             vel_cur_slope = self.velocity_list[j] - self.velocity_list[j - 1]
 
             # if the slope difference is less the the cutoff_rate
-            #   we assume that the slope is constant at this frame
-            if abs(vel_slope - vel_cur_slope) / abs(vel_cur_slope) < cutoff_rate:
+            # we assume that the slope is constant at this frame
+            slope_diff = vel_slope - vel_cur_slope
+            if abs(slope_diff) / abs(vel_cur_slope) < cutoff_rate:
                 if count == 0:
                     vel = vel_cur
                     vel_slope = vel_cur_slope
