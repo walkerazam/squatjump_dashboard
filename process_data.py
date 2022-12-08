@@ -1,38 +1,41 @@
 """
 process_data.py
-
-Import processed_data datafram from preprocess.py
+Import processed_data dataframe from preprocess.py and generate
+    a dataframe for calculation results of each jump
 Return:
-    1. ProcessData.py:
-    An object to process all the numerical data
-    Support to return indexes, lists and Calculation results
+    1. data - processed data from preprocess.py
+    2. index - index table from preprocess.py
+    3. calculations - calculation results of each jump
 """
 # import numpy as np
 import pandas as pd
 from preProcess import jumpSquatPreProcess
+
 G = 9.80665  # Constant for gravitational acceleration
 
 
 # Main Function
-def process_data(df):
+def process_data(data):
     """
     This is the main function that calls on the ProcessData
-    object with a passed dataframe containing squat jump data from
-    force plates.
-    Arguments:
-        1. df: the data containing squat jump information.
-    Return:
-        1. data: dataframe of the read data (?)
-        2. index: dataframe with time index of each jump start/end
-            and phases.
-        3. calculations: dataframe containing calculated jump metrics.
+        object with a passed dataframe containing squat jump data
+        from force plates.
+    Argument:
+        1. data: the raw data containing squat jump information.
+    Returns:
+        1. data - processed data from preprocess.py
+        2. index - index table from preprocess.py
+        3. calculations - calculation results of each jump
     """
+
     # Creating a Processed Data Object
-    PD = ProcessData(df)
-    # Calling functions to receieve data, indexes, and calculations
-    data = PD.get_data()
-    index = PD.get_index()
-    calculations = PD.get_calculations()
+    processed_data = ProcessData(data)
+
+    # Calling functions to get dataframes of processed data, indexes, and calculation results
+    data = processed_data.get_data()
+    index = processed_data.get_index()
+    calculations = processed_data.get_calculations()
+
     # Returning the three DFs
     return data, index, calculations
 
@@ -40,27 +43,27 @@ def process_data(df):
 class ProcessData:
     """
     Class object for data processing. To be used in
-    calculating jump metrics and identifying phases of
-    squat jumps.
+        calculating jump metrics and identifying
+        phases of squat jumps.
     """
 
-    def __init__(self, df):
+    def __init__(self, data):
         """
         Initialize Variables and import data from jumpSquatPreProcess.
-        Arguments:
-            1. df: jump dataframe.
+        Argument:
+            data: the raw data containing squat jump information.
         """
 
-        # Get indexes and mass from PreProcess by
-        # calling on PreProcessing to retrieve index and masses
-        self.data, self.index, self.mass = jumpSquatPreProcess(df)
+        # Get processed data, indexes and mass from preprocess.py
+        self.data, self.index, self.mass = jumpSquatPreProcess(data)
 
-        # Initial variables
+        # Initial default jump = 1
         self.jump = 1
-        # Calling an empty DF to store results
+
+        # Define cal_result as a DataFrame
         self.cal_result: pd.DataFrame()
 
-        # Storing indexes:
+        # Extract indexes from index table
         j = self.jump - 1
         self.event_start = self.index.iat[0, 2 * j]
         self.event_end = self.index.iat[0, 2 * j + 1]
@@ -70,34 +73,31 @@ class ProcessData:
         self.conc_end = self.index.iat[2, 2 * j + 1]
         self.landing = self.index.iat[4, 2 * j]
 
-        # Lists for y-axis computation (1.- 10.)
+        # Extract Lists from processed data for y-axis computation (1.- 10.)
         self.time_list = list(self.data['time'])
         self.l_force_list = list(self.data['ground_force1_vy'])
         self.r_force_list = list(self.data['ground_force2_vy'])
         self.force_list = list(self.data['ground_force_totaly'])
 
-        # Will be Replaced # (?)
-        self.acce_list, self.velocity_list,\
-            self.displace_list = self.setup_a_c_d()
+        self.acce_list = list(self.data['bodyacc_y'])
+        self.velocity_list = list(self.data['bodyvel_y'])
+        self.displace_list = list(self.data['bodypos_y'])
 
-        # TODO: (Comment out when complete):
-        # self.acce_list = list(self.data['body_acc'])
-        # self.velocity_list = list(self.data['body_vel'])
-        # self.displace_list = list(self.data['body_pos'])
+        # Extract Lists from processed data Lists for COP (11.& 12.)
+        self.rx_cop_list = list(self.data['ground_force1_px'])
+        self.lx_cop_list = list(self.data['ground_force2_px'])
+        self.rz_cop_list = list(self.data['ground_force1_pz'])
+        self.lz_cop_list = list(self.data['ground_force2_pz'])
 
-        # List for COP (11.& 12.)
-        self.lx_cop_list = list(self.data['ground_force1_px'])
-        self.rx_cop_list = list(self.data['ground_force2_px'])
-        self.lz_cop_list = list(self.data['ground_force1_pz'])
-        self.rz_cop_list = list(self.data['ground_force2_pz'])
+        # Generate dataframe of computed results of squat calculations
+        self.generate_cal_result()
 
-        # Generate result of squat calculations
-        self.generate_df()
-
-    # Set Function for Selecting Certain Jump:
+    # Set Function for Selecting a Certain Jump
     def set_jump(self, jump=1):
         """
         Reset indexes for the certain jumps
+        Argument:
+            jump - first, second or third jump
         """
         j = jump - 1
         self.event_start = self.index.iat[0, 2 * j]
@@ -108,9 +108,9 @@ class ProcessData:
         self.conc_end = self.index.iat[2, 2 * j + 1]
         self.landing = self.index.iat[4, 2 * j]
 
-    # Defining Functions for Returns:
+    # Get Functions for Returns
     def get_data(self):
-        """Return processed data"""
+        """Return processed data dataframe"""
         return self.data
 
     def get_index(self):
@@ -118,71 +118,78 @@ class ProcessData:
         return self.index
 
     def get_calculations(self):
-        """Return dataframe of squat calculations results"""
+        """Return dataframe of squat calculations result"""
         return self.cal_result
 
     # Functions for Squat Calculations
-    def generate_df(self):
+    def generate_cal_result(self):
         """
         Creating a dataframe for the 12 squat calculation results of 3 jumps:
         """
         # Creating a empty DF with columns
-        df = pd.DataFrame(columns=['weight(kg)', 'jump_height(cm)',
-                                   'takeoff_v(m/s)', 'rate_of_v_acce(m/s^3)',
-                                   'jump_time(s)', 'ecce_time(s)',
-                                   'conc_time(s)', 'peak_force(N)',
-                                   'peak_power(W)',
-                                   'avg_power_conc(W)',
-                                   'squat_depth(cm)',
-                                   'cop_displace_left_x(cm)',
-                                   'cop_displace_right_x(cm)',
-                                   'cop_displace_left_z(cm)',
-                                   'cop_displace_right_z(cm)'],
-                          index=[1, 2, 3])
+        cal_result = pd.DataFrame(columns=['weight(kg)', 'jump_height(cm)',
+                                           'takeoff_v(m/s)', 'rate_of_v_acce(m/s^3)',
+                                           'jump_time(s)', 'ecce_time(s)',
+                                           'conc_time(s)', 'peak_force(N)',
+                                           'peak_power(W)', 'avg_power_conc(W)',
+                                           'squat_depth(cm)',
+                                           'cop_displace_right_x(cm)',
+                                           'cop_displace_left_x(cm)',
+                                           'cop_displace_right_z(cm)',
+                                           'cop_displace_left_z(cm)'],
+                                  index=[1, 2, 3])
+
         # Adding mass of patient
-        df.at[1, 'weight(kg)'] = self.mass
-        # Filling in dataframe with values
+        cal_result.at[1, 'weight(kg)'] = self.mass
+
+        # Filling in dataframe with values for each jump
         for i in range(1, 4):
             self.set_jump(i)
-            height, v = self.height_by_v()
-            df.at[i, 'jump_height(cm)'] = height
-            df.at[i, 'takeoff_v(m/s)'] = v
-            df.at[i, 'rate_of_v_acce(m/s^3)'] = self.rate_of_force_ecce()
-            df.at[i, 'jump_time(s)'] = (self.conc_end - self.ecce_start) / 1000
-            df.at[i, 'ecce_time(s)'] = (self.ecce_end - self.ecce_start) / 1000
-            df.at[i, 'conc_time(s)'] = (self.conc_end - self.conc_start) / 1000
-            df.at[i, 'peak_force(N)'] = self.get_peak_force()
-            df.at[i, 'peak_power(W)'] = self.get_peak_power()
-            df.at[i, 'avg_power_conc(W)'] = self.avg_power_conc()
-            df.at[i, 'squat_depth(cm)'] = self.get_squat_depth()
-            lx, rx, lz, rz = self.get_max_cop_dis()
-            df.at[i, 'cop_displace_left_x(cm)'] = lx
-            df.at[i, 'cop_displace_right_x(cm)'] = rx
-            df.at[i, 'cop_displace_left_z(cm)'] = lz
-            df.at[i, 'cop_displace_right_z(cm)'] = rx
-        # Storing results
-        self.cal_result = df
+            height, vel = self.height_by_v()
+            cal_result.at[i, 'jump_height(cm)'] = height
+            cal_result.at[i, 'takeoff_v(m/s)'] = vel
+            cal_result.at[i, 'rate_of_v_acce(m/s^3)'] = self.rate_of_force_ecce()
+            cal_result.at[i, 'jump_time(s)'] \
+                = (self.conc_end - self.ecce_start) / 1000
+            cal_result.at[i, 'ecce_time(s)'] \
+                = (self.ecce_end - self.ecce_start) / 1000
+            cal_result.at[i, 'conc_time(s)'] \
+                = (self.conc_end - self.conc_start) / 1000
+            cal_result.at[i, 'peak_force(N)'] = self.get_peak_force()
+            cal_result.at[i, 'peak_power(W)'] = self.get_peak_power()
+            cal_result.at[i, 'avg_power_conc(W)'] = self.avg_power_conc()
+            cal_result.at[i, 'squat_depth(cm)'] = self.get_squat_depth()
+            right_x, left_x, right_z, left_z = self.get_max_cop_dis()
+            cal_result.at[i, 'cop_displace_right_x(cm)'] = right_x
+            cal_result.at[i, 'cop_displace_left_x(cm)'] = left_x
+            cal_result.at[i, 'cop_displace_right_z(cm)'] = right_z
+            cal_result.at[i, 'cop_displace_left_z(cm)'] = left_z
 
-    # Metric Calulcation Functions:
+        # Storing results
+        self.cal_result = cal_result
+
+    # Metric Calculation Functions:
     def height_by_v(self):
         """
-        Function: Jump height from takeoff velocity (cm)
-        Returns: max_height of jump, v(0) (velocity at takeoff)
+        Function to get Jump height from takeoff velocity.
+        Returns:
+            1. max_height: max height of a jump (cm)
+            2. vel: take-off velocity(m/s)
         """
-        g = 9.80665
-        v0, v_index = self.get_take_off_v()
-        max_height = v0**2 / (2 * g) * 100
-        return max_height, v0
+        vel = self.get_take_off_v()
+        max_height = vel ** 2 / (2 * G) * 100
+        return max_height, vel
 
     def get_take_off_v(self):
         """
-        Function: Retrieve take off velocity
-        Returns: Start index and velocity at takeoff
+        Function to compute the take-off velocity.
+        Return:
+            vel: take-off velocity (m/s)
         """
         max_velocity = -99999
         max_index = 0
         start = self.event_start
-        end = self.event_end
+        end = self.landing
 
         # Find a peak velocity before takeoff
         for i in range(start, end):
@@ -190,79 +197,66 @@ class ProcessData:
                 max_velocity = self.velocity_list[i]
                 max_index = i
 
-        # Find a constant slop after the peak
+        # Find a constant slop after the peak to find the start point
+        #   where the patient is on the air
         cutoff_rate = 0.001
-        v0 = self.velocity_list[max_index]
-        v0_slope = self.velocity_list[max_index] - \
-            self.velocity_list[max_index-1]
-        start_index = max_index
+        vel = self.velocity_list[max_index]
+        vel_slope = self.velocity_list[max_index] - \
+                    self.velocity_list[max_index - 1]
         count = 0
+
         for j in range(max_index + 1, len(self.velocity_list)):
-            v1 = self.velocity_list[j]
-            v1_slope = self.velocity_list[j] - self.velocity_list[j-1]
-            if abs(v1_slope - v0_slope) / abs(v1_slope) < cutoff_rate:
+            vel_cur = self.velocity_list[j]
+            vel_cur_slope = self.velocity_list[j] - self.velocity_list[j - 1]
+
+            # if the slope difference is less the the cutoff_rate
+            #   we assume that the slope is constant at this frame
+            if abs(vel_slope - vel_cur_slope) / abs(vel_cur_slope) < cutoff_rate:
                 if count == 0:
-                    v0 = v1
-                    v0_slope = v1_slope
-                    start_index = j
+                    vel = vel_cur
+                    vel_slope = vel_cur_slope
                 else:
                     pass
+                #
                 count += 1
             else:
-                v0 = v1
-                v0_slope = v1_slope
-                start_index = j
+                vel = vel_cur
+                vel_slope = vel_cur_slope
                 count = 0
 
+            # If a constant slope is found, break
             if count == 100:
                 break
-        # Raising exception:
+
+        # if a constant sloop cannot be found, raise exception
         if count != 100:
             raise Exception("Cannot find a constant slope")
-        # Returning v0 and start index
-        return v0, start_index
+        return vel
 
     def rate_of_force_ecce(self):
         """
-        Function: Rate of force development during eccentric phase
-        Returns: Rate of eccentric Force (df/dt)
+        Function to return the rate of force development during
+            eccentric phase.
+        Return:
+            rate_of_f: rate of force during eccentric phase (m/s^3)
         """
+        # catch the time and acceleration from the eccentric phase
+        #   and get its ratio
         start = self.ecce_start
         end = self.ecce_end
-        dt = (end - start) / 1000
-        df: float = self.acce_list[end] - self.acce_list[start]
-        return df/dt
-
-    # 3. Jump time (s)
-    # 4. Eccentric phase time (s)
-    # 5. Concentric phase time (s)
-    def duration(self):
-        """
-        Function to return the duration of a jump
-        """
-        time = (self.conc_end - self.ecce_start) / 1000
-        return time
-
-    def get_flight_time(self):
-        """
-        Function to return Flight time (s)-Time when force = 0
-        """
-        v0, start_index = self.get_take_off_v()
-        g = 9.80665
-        flight_time = 2 * v0 / g
-        return flight_time, start_index
-
-    def get_zero_time(self):
-        """
-        Function to return time at end of jump
-        """
-        return (self.landing - self.conc_end)/1000, self.conc_end
+        time_diff = (end - start) / 1000
+        force_diff: float = self.acce_list[end] - self.acce_list[start]
+        rate_of_f = time_diff / force_diff
+        return rate_of_f
 
     def get_peak_force(self):
         """
-        Function to return Peak force for a jump
+        Function to return Peak force for a jump.
+        Return:
+            peak_force(N)
         """
         peak_force = 0.0
+        # find the peak force in the force_list
         for i in range(self.event_start, self.event_end):
             peak_force = max(peak_force, self.force_list[i])
 
@@ -270,25 +264,29 @@ class ProcessData:
 
     def get_peak_power(self):
         """
-        Function to return peak power:
-            Peak power = max (force * velocity)
+        Function to return peak power
+        Return:
+            peak_power(W)
         """
         peak_power = 0.0
+        # Find the max power where power = force * velocity
         for i in range(self.event_start, self.event_end):
             cur_power = self.force_list[i] * self.velocity_list[i]
             peak_power = max(peak_power, cur_power)
-
         return peak_power
 
     def avg_power_conc(self):
         """
-        Function to return Average Power for concentric phase of
-            jump.
+        Function to return Average Power during concentric phase.
+        Return:
+            avg_power: the average power (W)
         """
         start = self.conc_start
         end = self.conc_end
         count = start - end
         sum_power = 0.0
+
+        # Sum the power value for each frame and compute average
         for i in range(start, end):
             sum_power += self.force_list[i] * self.velocity_list[i]
 
@@ -297,53 +295,66 @@ class ProcessData:
 
     def get_squat_depth(self):
         """
-        Function to return calculation for
-            Counter-movement / Squat Depth
+        Function to return the Counter-movement / Squat Depth.
+        Return:
+            Squat Depth (cm)
         """
         min_displace = 0.0
+        # Find the lowest position before take-off
         for i in range(self.event_start, self.conc_end):
             min_displace = min(min_displace, self.displace_list[i])
-        return abs(min_displace)*100
+        return abs(min_displace) * 100
 
     def get_max_cop_dis(self):
         """
-        Function to retrieve center of pressure (COP) displacement
-            in the x- and z-directions during concentric phase.
+        Function to retrieve the maximum center of pressure (COP)
+            displacement during concentric phase for each foot
+            in the x-direction and z-directions.
+        Returns:
+            1. right_x: max COP displacement of right foot on X-axis(cm)
+            2. left_x: max COP displacement of left foot on X-axis(cm)
+            3. right_z: max COP displacement of right foot on Z-axis(cm)
+            4. left_x: max COP displacement of left foot on Z-axis(cm)
         """
         # Max COP displacement in x-direction
-        lx = self.max_cop_distance('l', 'x')
-        rx = self.max_cop_distance('r', 'x')
+        right_x = self.max_cop_distance('r', 'x')
+        left_x = self.max_cop_distance('l', 'x')
+
         # Max COP displacement in z-direction
-        lz = self.max_cop_distance('l', 'z')
-        rz = self.max_cop_distance('r', 'z')
-        return lx, rx, lz, rz
+        right_z = self.max_cop_distance('r', 'z')
+        left_z = self.max_cop_distance('l', 'z')
+
+        # Return the four results
+        return right_x, left_x, right_z, left_z
 
     def max_cop_distance(self, foot, axis):
         """
         Function to retrieve the max Center of Pressure
-            distance.
+            displacement for a certain foot and axis
         Arguments:
-            1. foot: [todo]
-            2. axis: [axis]
+            1. foot: left foot or right foot
+            2. axis: X-axis or Z-axis
         Return:
-            1. max displacement distance
+            max displacement distance (cm)
         """
-        if axis == 'x':
-            if foot == 'l':
-                cop_list = self.lx_cop_list
-                origin = self.lx_cop_list[0]
-            else:
-                cop_list = self.rx_cop_list
-                origin = self.rx_cop_list[0]
-        else:
-            if foot == 'l':
-                cop_list = self.lz_cop_list
-                origin = self.lz_cop_list[0]
-            else:
-                cop_list = self.rz_cop_list
-                origin = self.rz_cop_list[0]
 
-        # Find the max displacement
+        # Identify for the four different cases
+        if axis == 'x':
+            if foot == 'r':
+                cop_list = self.rx_cop_list
+                origin = self.rx_cop_list[self.conc_start]
+            else:
+                cop_list = self.lx_cop_list
+                origin = self.lx_cop_list[self.conc_start]
+        else:
+            if foot == 'r':
+                cop_list = self.rz_cop_list
+                origin = self.rz_cop_list[self.conc_start]
+            else:
+                cop_list = self.lz_cop_list
+                origin = self.lz_cop_list[self.conc_start]
+
+        # Find the max absolute displacement
         start = self.conc_start
         end = self.conc_end
         max_displace = 0.0
@@ -352,89 +363,4 @@ class ProcessData:
             if abs(cur_displace) > abs(max_displace):
                 max_displace = cur_displace
 
-        return max_displace*100
-
-    # For temporary acc/vel/pos list
-    def setup_a_c_d(self):
-        idx = self.index
-        first_jump = (idx.iat[0, 0], idx.iat[0, 1])
-        second_jump = (idx.iat[0, 2], idx.iat[0, 3])
-        third_jump = (idx.iat[0, 4], idx.iat[0, 5])
-        a_list = []
-        v_list = []
-        d_list = []
-
-        for i in range(0, first_jump[0]):
-            a_list.append(0)
-            v_list.append(0)
-            d_list.append(0)
-        a_list += force_to_acce(self.force_list[first_jump[0]: first_jump[1]],
-                                self.mass)
-        v_list += integrate(a_list[first_jump[0]: first_jump[1]])
-        d_list += integrate(v_list[first_jump[0]: first_jump[1]])
-
-        for i in range(first_jump[1], second_jump[0]):
-            a_list.append(0)
-            v_list.append(0)
-            d_list.append(0)
-        a_list += force_to_acce(self.force_list[second_jump[0]:
-                                second_jump[1]], self.mass)
-        v_list += integrate(a_list[second_jump[0]: second_jump[1]])
-        d_list += integrate(v_list[second_jump[0]: second_jump[1]])
-
-        for i in range(second_jump[1], third_jump[0]):
-            a_list.append(0)
-            v_list.append(0)
-            d_list.append(0)
-        a_list += force_to_acce(self.force_list[third_jump[0]: third_jump[1]],
-                                self.mass)
-        v_list += integrate(a_list[third_jump[0]: third_jump[1]])
-        d_list += integrate(v_list[third_jump[0]: third_jump[1]])
-
-        for i in range(third_jump[1], len(self.force_list)):
-            a_list.append(0)
-            v_list.append(0)
-            d_list.append(0)
-
-        return a_list, v_list, d_list
-
-
-# For temporary acc/vel/pos list
-def integrate(input_list, dt=0.001):
-    """Integrate list of value once"""
-
-    # Exceptions
-    if not isinstance(input_list, list):
-        raise Exception("input_list is not a list")
-    if len(input_list) == 0:
-        raise Exception("input_list is empty")
-
-    # Function Start
-    output_list = []
-    output_list.append(0)
-
-    for i in range(1, len(input_list)):
-        x = (input_list[i - 1] + input_list[i]) / 2
-        value = output_list[i - 1] + (x * dt)
-        output_list.append(value)
-
-    return output_list
-
-
-def force_to_acce(input_list, mass):
-    """ Transfer force data list to acceleration data list by given mass"""
-    # Exceptions
-    if not isinstance(input_list, list):
-        raise Exception("input_list is not a list")
-    if len(input_list) == 0:
-        raise Exception("input_list is empty")
-    if mass <= 0:
-        raise Exception("mass is not a positive value")
-
-    # Function Start
-    output_list = []
-    for i in range(len(input_list)):
-        value = (input_list[i] / mass) - G
-        output_list.append(value)
-
-    return output_list
+        return max_displace
