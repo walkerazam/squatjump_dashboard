@@ -60,6 +60,7 @@ class Test_Squat_Jump_Utils(unittest.TestCase):
         """
         # read sample csv for testing
         df = pd.read_csv('/data/BFR003_squat_jump.csv')
-
-        # Raise Errors output is unexpected type:
-        self.assert isinstance(create_COP_plot(df), go._figure.Figure)
+        # error message in case if test case fails
+        message = "Return object should be a Plotly figure"
+        # assertIsInstance() to check if obj is instance of class
+        self.assertIsInstance(create_COP_plot(df), go._figure.Figure, message)
