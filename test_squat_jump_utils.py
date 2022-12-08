@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import unittest
 import plotly.graph_objs as go
-from squat_jump_utils import groundforce_plot, create_COP_plot, check_plotly_output
+from squat_jump_utils import groundforce_plot, create_COP_plot, create_COP_plot
 
 
 # Defining the TestCase class from unittest module
