@@ -83,13 +83,17 @@ if uploaded_file is not None:
         # If none selected, print a message
         st.caption("None Selected...")
 
+    # Giving users options to plot metrics
     st.write("## Jump Plots:")
+    # Creating a multiselect interface
     options = st.multiselect(
         'What metrics would you like to visualize?',
         ['Position', 'Velocity', 'Acceleration'])
+    # If there is an option...
     if options is None:
         st.caption("None Selected")
     else:
+        # Per plot entry, show the plots
         for option in options:
             if option == 'Position':
                 st.pyplot(create_plot_vs_time(processed_data, 'bodypos_y'))
@@ -109,6 +113,20 @@ if uploaded_file is not None:
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.caption("No Interactive Plot Selected")
+
+    # Giving an option to download metrics
+    @st.cache
+    def convert_df(df):
+        # IMPORTANT: Cache the conversion to prevent computation on every rerun
+        return df.to_csv().encode('utf-8')
+    csv = convert_df(metric_viewer(calculations_df))
+    # Adding download button
+    st.download_button(
+        label="Download Jump Metrics as CSV",
+        data=csv,
+        file_name='jump_metrics.csv',
+        mime='text/csv',
+    )
 
 
 else:
