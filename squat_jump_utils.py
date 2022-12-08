@@ -54,7 +54,6 @@ def groundforce_plot(df, dir):
 
     return fig
 
-
 @st.cache
 def create_COP_plot(df):
     """
@@ -125,6 +124,80 @@ def create_COP_plot(df):
 
     return fig
 
+def create_3D_force_plot(df, position = 'left'):
+    """
+    This function creates an interactive 3D force plot using
+    Matplotlib FuncAnimation. It takes in the read jump dataframe and returns
+    a figure.
+    Arguments:
+        1. df: Dataframe of squat jump data from force plates.
+    Return:
+        1. fig: An interactive 3D figure for force data.
+    """
+
+    if position == 'left':
+        df = df[df['Position'] == 'left']
+    else:
+        df = df[df['Position'] == 'right']
+
+    df = df.reset_index(drop = True)
+
+#     global fig, ax
+    fig, ax = plt.subplots(subplot_kw = dict(projection="3d"))
+
+    # Colorbar initiation
+    norm = matplotlib.colors.Normalize()
+    norm.autoscale(df['ground_force_pt2z'])
+    cm = matplotlib.cm.cool
+    sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
+    sm.set_array([])
+
+    def get_arrow(idx):
+        x = df['ground_force_pt1x'][idx]
+        y = df['ground_force_pt1y'][idx]
+        z = df['ground_force_pt1z'][idx]
+        u = df['ground_force_pt2x'][idx]
+        v = df['ground_force_pt2y'][idx]
+        w = df['ground_force_pt2z'][idx]
+
+        return x, y, z, u, v, w
+
+#     global quiver
+    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][0])))
+
+    ax.set_title(f'3D Force Plot (Position: {position})')
+
+    ax.set_xlabel('X Axis')
+    ax.set_xlim(min(list(df.ground_force_pt1x) + \
+                    list(df.ground_force_pt2x)) - 1,
+                max(list(df.ground_force_pt1x) + \
+                    list(df.ground_force_pt2x)) + 1)
+
+    ax.set_ylabel('Y Axis')
+    ax.set_ylim(min(list(df.ground_force_pt1y) + \
+                    list(df.ground_force_pt2y)) - 1,
+                max(list(df.ground_force_pt1y) + \
+                    list(df.ground_force_pt2y)) + 1)
+
+    ax.set_zlabel('Z Axis')
+    ax.set_zlim(min(list(df.ground_force_pt1z) + \
+                    list(df.ground_force_pt2z)),
+                max(list(df.ground_force_pt1z) + \
+                    list(df.ground_force_pt2z)) + 1)
+
+    def update(idx):
+        global quiver
+        quiver.remove()
+        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][idx])))
+
+    global anim
+    anim = FuncAnimation(fig, update, frames = len(df), interval = 0.001, blit = False)
+
+    plt.colorbar(sm, location = 'bottom', label = 'Force (N)')
+
+    plt.show()
+
+    return anim
 
 def metric_viewer(calculations_df):
     """
