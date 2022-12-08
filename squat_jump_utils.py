@@ -11,7 +11,8 @@ import numpy as np
 import plotly.express as px
 # import plotly.graph_objs as go
 
-import matplotlib  # TODO: narrow down module for color map
+import matplotlib.colors as colors
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
@@ -188,10 +189,10 @@ def create_3D_force_plot(df, position='left'):
     fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
 
     # Colorbar initiation
-    norm = matplotlib.colors.Normalize()
+    norm = colors.Normalize()
     norm.autoscale(df['ground_force_pt2z'])
-    cm = matplotlib.cm.cool
-    sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
+    cm = cm.cool
+    sm = cm.ScalarMappable(cmap=cm, norm=norm)
     sm.set_array([])
 
     def get_arrow(idx):
@@ -330,24 +331,6 @@ def check_direction(dir):
                          'x, y, or z.')
     else:
         return None
-
-
-# def check_plotly_output(fig):
-#     """
-#     This function checks if the resulting figure made by Plotly is
-#     the right type.
-#     Arguments:
-#         1. fig: Figure created using Plotly
-#     Return:
-#         RaiseError if not correct type (plotly.graph_objs._figure.Figure).
-#     """
-#     # Raise Errors output is unexpected type:
-#     if type(fig) != go._figure.Figure:
-#         raise TypeError('Output figure type must be a plotly figure ' +
-#                         'Instead returned figure type ' +
-#                         str(type(fig)))
-#     else:
-#         return None
 
 
 def check_matplotlib_output(fig):
