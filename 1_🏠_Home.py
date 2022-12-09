@@ -7,9 +7,14 @@ Home.py
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import streamlit.components.v1 as components
 from squat_jump_utils import groundforce_plot, create_COP_plot
 from squat_jump_utils import metric_viewer, create_plot_vs_time
+from squat_jump_utils import split_by_jump, create_center_pressure_df
 from process_data import process_data
+from matplotlib.animation import FuncAnimation
 
 # Page Configurations
 st.set_page_config(
@@ -138,56 +143,25 @@ if uploaded_file is not None:
         mime='text/csv',
     )
 
-# TRYING 3D Plot
-    import matplotlib.pyplot as plt
-    import matplotlib
-    from mpl_toolkits.mplot3d import Axes3D
-    from matplotlib.animation import FuncAnimation
-    from squat_jump_utils import split_by_jump
-    import streamlit.components.v1 as components
-
-    def create_center_pressure_df(df):
-        """Creates a dataframe for visualization when given a path to the raw data file
-        (Currently the file format is assumed to be identical to BFR007_3d_vectors.csv)"""
-
-        if 'Unnamed: 0' in df.columns:
-            df = df.drop('Unnamed: 0', axis = 1)
-
-        center_pressure_left = df[['time', 'ground_force2_pz', 'ground_force2_px', 'ground_force2_vz', \
-                               'ground_force2_vx', 'ground_force2_vy']].copy()
-        center_pressure_left.rename(columns = {'ground_force2_pz' : 'ground_force_pt1x',
-                                               'ground_force2_px' : 'ground_force_pt1y',
-                                               'ground_force2_vz' : 'ground_force_pt2x',
-                                               'ground_force2_vx' : 'ground_force_pt2y',
-                                               'ground_force2_vy' : 'ground_force_pt2z'
-                                                }, inplace = True)
-        center_pressure_left['ground_force_pt1z'] = [0]*len(center_pressure_left)
-        center_pressure_left['Position'] = ['left']*len(center_pressure_left)
-
-        center_pressure_right = df[['time', 'ground_force1_pz', 'ground_force1_px', 'ground_force1_vz', \
-                                    'ground_force1_vx', 'ground_force1_vy']].copy()
-        center_pressure_right.rename(columns = {'ground_force1_pz' : 'ground_force_pt1x',
-                                                'ground_force1_px' : 'ground_force_pt1y',
-                                                'ground_force2_vz' : 'ground_force_pt2x',
-                                                'ground_force2_vx' : 'ground_force_pt2y',
-                                                'ground_force2_vy' : 'ground_force_pt2z'
-                                                 }, inplace = True)
-        center_pressure_right['ground_force_pt1z'] = [0]*len(center_pressure_left)
-        center_pressure_right['Position'] = ['right']*len(center_pressure_right)
-
-        center_pressure = pd.concat([center_pressure_left, center_pressure_right], axis = 0, ignore_index = True)
-        center_pressure.sort_values(by = "time", inplace = True)
-
-        return center_pressure
-
+    # 3D Animated Plot:
     df = processed_data.copy()
+    # Retrieveing DF with Position
     df = create_center_pressure_df(df)
-    df = split_by_jump(df, index_df, 1)
-    df = df[df['Position'] == 'left']
-    df = df.reset_index(drop = True)
+    # Asking user for what jump to consider:
+    # Asking which jump to view:
+    jump = st.radio("Select which jump to view:",
+                    ('1', '2', '3'))
+    # Splitting our Dataset by the selected jump
+    df = split_by_jump(df, index_df, jump)
 
-    fig, ax = plt.subplots(subplot_kw = dict(projection="3d"))
+    # Selecting Leg Position (Left or Right)
+    selected_position = 'left'
+    df = df[df['Position'] == selected_position]
+    # Resetting index
+    df = df.reset_index(drop=True)
 
+    # Creating plot animation
+    fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
     # Colorbar initiation
     norm = matplotlib.colors.Normalize()
     norm.autoscale(df['ground_force_pt2z'])
@@ -196,6 +170,16 @@ if uploaded_file is not None:
     sm.set_array([])
 
     def get_arrow(idx):
+        """
+        This function returns unit vector arrow position for
+        plotting in a 3D space.
+        Arguments:
+            1. idx: index of the time for where plot the arrow
+        Return:
+            1. coordinates for x, y, z, and magnitude values
+                (u, v, w)
+        """
+        # x, y, and z = 0 for static start positions
         x = 0
         y = 0
         z = 0
@@ -203,41 +187,54 @@ if uploaded_file is not None:
         v = df['ground_force_pt2y'][idx]
         w = df['ground_force_pt2z'][idx]
         return x, y, z, u, v, w
-
-    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][0])))
-
-    ax.set_title('3D Force Plot')
-
+    # Quiver plotting:
+    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio=0.05,
+                       color=cm(norm(df['ground_force_pt2z'][0])))
+    # Plot Title:
+    plot_title = '3D Force Plot for Jump ' + str(jump) + \
+                 ' [' + str(selected_position) + ']'
+    ax.set_title(plot_title)
+    # X Axis:
     ax.set_xlabel('X Axis')
-    ax.set_xlim(min(list(df.ground_force_pt1x) + \
+    ax.set_xlim(min(list(df.ground_force_pt1x) +
                     list(df.ground_force_pt2x)) - 1,
-                max(list(df.ground_force_pt1x) + \
+                max(list(df.ground_force_pt1x) +
                     list(df.ground_force_pt2x)) + 1)
-
+    # Y Axis:
     ax.set_ylabel('Y Axis')
-    ax.set_ylim(min(list(df.ground_force_pt1y) + \
+    ax.set_ylim(min(list(df.ground_force_pt1y) +
                     list(df.ground_force_pt2y)) - 1,
-                max(list(df.ground_force_pt1y) + \
+                max(list(df.ground_force_pt1y) +
                     list(df.ground_force_pt2y)) + 1)
-
-    ax.set_zlabel('Z Axis')
-    ax.set_zlim(min(list(df.ground_force_pt1z) + \
+    # Z Axis:
+    ax.set_zlabel('Force Magnitude')
+    ax.set_zlim(min(list(df.ground_force_pt1z) +
                     list(df.ground_force_pt2z)),
-                max(list(df.ground_force_pt1z) + \
+                max(list(df.ground_force_pt1z) +
                     list(df.ground_force_pt2z)) + 1)
 
     def update(idx):
+        """
+        This function takes the index for the 3D animation
+        in order to update the arrows.
+        No returns, but updates Quiver position.
+        Arguments:
+            1. idx: the time index for the jump data.
+        """
+        # Calling on the global quiver
         global quiver
+        # Removing the old quiver
         quiver.remove()
-        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio = 0.05, color=cm(norm(df['ground_force_pt2z'][idx])))
+        # Replotting based on new idx
+        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio=0.05,
+                           color=cm(norm(df['ground_force_pt2z'][idx])))
 
-    # anim = FuncAnimation(fig, update, frames = len(df), interval = 0.3)
-    anim = FuncAnimation(fig, update, frames = range(0, len(df), 4), interval = 1)
-
+    # Animation figure
+    anim = FuncAnimation(fig, update, frames=range(0, len(df), 4), interval=1)
+    # Colorbar for magnitude
     plt.colorbar(sm, location='bottom', label='Force (N)')
-
-    components.html(anim.to_jshtml(), height = 1000)
-
+    # To show in streamlit, saving as jshtml and then showing
+    components.html(anim.to_jshtml(), height=1000)
 
 else:
     st.caption("Please Upload a File Above")

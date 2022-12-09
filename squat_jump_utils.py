@@ -4,18 +4,13 @@ squat_jump_utils.py
     1_Home.py. These helper functions are
     called from the main home page
     containing the streamlit code.
+    This file also contains helper functions used
+    for testing purposes.
 """
 import pandas as pd
 import numpy as np
-
 import plotly.express as px
-# import plotly.graph_objs as go
-
-import matplotlib.colors as colors
-import matplotlib.cm as colormap
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
 import streamlit as st
 
 
@@ -165,87 +160,6 @@ def create_COP_plot(df):
     return fig
 
 
-def create_3D_force_plot(df, position='left'):
-    """
-    This function creates an interactive 3D force plot using
-    Matplotlib FuncAnimation. It takes in the read jump dataframe and returns
-    a figure.
-    Arguments:
-        1. df: Dataframe of squat jump data from force plates.
-        2. position: position of leg to plot the jumps. Values either
-            'left' or 'right'
-    Return:
-        1. fig: An interactive 3D figure for force data.
-    """
-
-    if position == 'left':
-        df = df[df['Position'] == 'left']
-    else:
-        df = df[df['Position'] == 'right']
-
-    df = df.reset_index(drop=True)
-
-#     global fig, ax
-    fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
-
-    # Colorbar initiation
-    norm = colors.Normalize()
-    norm.autoscale(df['ground_force_pt2z'])
-    cm = colormap.cool
-    sm = colormap.ScalarMappable(cmap=cm, norm=norm)
-    sm.set_array([])
-
-    def get_arrow(idx):
-        x = df['ground_force_pt1x'][idx]
-        y = df['ground_force_pt1y'][idx]
-        z = df['ground_force_pt1z'][idx]
-        u = df['ground_force_pt2x'][idx]
-        v = df['ground_force_pt2y'][idx]
-        w = df['ground_force_pt2z'][idx]
-
-        return x, y, z, u, v, w
-
-#     global quiver
-    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio=0.05,
-                       color=cm(norm(df['ground_force_pt2z'][0])))
-
-    ax.set_title(f'3D Force Plot (Position: {position})')
-
-    ax.set_xlabel('X Axis')
-    ax.set_xlim(min(list(df.ground_force_pt1x) +
-                    list(df.ground_force_pt2x)) - 1,
-                max(list(df.ground_force_pt1x) +
-                    list(df.ground_force_pt2x)) + 1)
-
-    ax.set_ylabel('Y Axis')
-    ax.set_ylim(min(list(df.ground_force_pt1y) +
-                    list(df.ground_force_pt2y)) - 1,
-                max(list(df.ground_force_pt1y) +
-                    list(df.ground_force_pt2y)) + 1)
-
-    ax.set_zlabel('Z Axis')
-    ax.set_zlim(min(list(df.ground_force_pt1z) +
-                    list(df.ground_force_pt2z)),
-                max(list(df.ground_force_pt1z) +
-                    list(df.ground_force_pt2z)) + 1)
-
-    def update(idx):
-        global quiver
-        quiver.remove()
-        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio=0.05,
-                           color=cm(norm(df['ground_force_pt2z'][idx])))
-
-    global anim
-    anim = animation.FuncAnimation(fig, update, frames=len(df),
-                                   interval=0.001, blit=False)
-
-    plt.colorbar(sm, location='bottom', label='Force (N)')
-
-    plt.show()
-
-    return anim
-
-
 def metric_viewer(calculations_df):
     """
     This function creates a metric table output to be viewed in
@@ -311,6 +225,65 @@ def split_by_jump(df, index, jump):
     # Filtering
     jump_df = df[mask1 & mask2]
     return jump_df
+
+
+def create_center_pressure_df(df):
+    """
+    Creates a dataframe for visualization
+    when given a path to the raw data file.
+    Arguments:
+        1. df: processed_df containing vector data
+    Return:
+        1. center_pressure: df containing translated
+            column names and position.
+    """
+    # Seperating Left Leg Data
+    center_pressure_left = df[['time',
+                               'ground_force2_pz',
+                               'ground_force2_px',
+                               'ground_force2_vz',
+                               'ground_force2_vx',
+                               'ground_force2_vy']].copy()
+    # Renaming columns:
+    center_pressure_left.rename(columns={
+        'ground_force2_pz': 'ground_force_pt1x',
+        'ground_force2_px': 'ground_force_pt1y',
+        'ground_force2_vz': 'ground_force_pt2x',
+        'ground_force2_vx': 'ground_force_pt2y',
+        'ground_force2_vy': 'ground_force_pt2z'
+                                            }, inplace=True)
+    center_pressure_left['ground_force_pt1z'] = [0] * \
+        len(center_pressure_left)
+    # Adding a new column Position
+    center_pressure_left['Position'] = ['left'] * len(center_pressure_left)
+    # Seperating Right Leg Data
+    center_pressure_right = df[['time',
+                                'ground_force1_pz',
+                                'ground_force1_px',
+                                'ground_force1_vz',
+                                'ground_force1_vx',
+                                'ground_force1_vy']].copy()
+    # Homogenizing column names for right leg also
+    center_pressure_right.rename(columns={
+        'ground_force1_pz': 'ground_force_pt1x',
+        'ground_force1_px': 'ground_force_pt1y',
+        'ground_force2_vz': 'ground_force_pt2x',
+        'ground_force2_vx': 'ground_force_pt2y',
+        'ground_force2_vy': 'ground_force_pt2z'
+                                            }, inplace=True)
+    center_pressure_right['ground_force_pt1z'] = [0] * \
+        len(center_pressure_left)
+    # Adding column for Position
+    center_pressure_right['Position'] = ['right'] * \
+        len(center_pressure_right)
+    # Rejoining our two dataframes
+    center_pressure = pd.concat([center_pressure_left,
+                                 center_pressure_right],
+                                axis=0, ignore_index=True)
+    # Sorting by time
+    center_pressure.sort_values(by="time", inplace=True)
+    # Returning the dataset with Position
+    return center_pressure
 
 
 # Helper functions below:
