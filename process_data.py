@@ -9,6 +9,7 @@ Return:
 """
 # import numpy as np
 import pandas as pd
+from scipy.stats import linregress
 from preProcess import jumpSquatPreProcess
 
 G = 9.80665  # Constant for gravitational acceleration
@@ -172,7 +173,7 @@ class ProcessData:
         # Creating a empty DF with columns
         cal_result = pd.DataFrame(columns=['weight(kg)', 'jump_height(cm)',
                                            'takeoff_v(m/s)',
-                                           'rate_of_v_acce(m/s^3)',
+                                           'rate_of_f_ecce(N/s)',
                                            'jump_time(s)', 'ecce_time(s)',
                                            'conc_time(s)', 'peak_force(N)',
                                            'peak_power(W)',
@@ -193,8 +194,8 @@ class ProcessData:
             height, vel = self.height_by_v()
             cal_result.at[i, 'jump_height(cm)'] = height
             cal_result.at[i, 'takeoff_v(m/s)'] = vel
-            cal_result.at[i,
-                          'rate_of_v_acce(m/s^3)'] = self.rate_of_force_ecce()
+            cal_result.at[i, 'rate_of_f_ecce(N/s)'] \
+                = self.rate_of_force_ecce()
             cal_result.at[i, 'jump_time(s)'] \
                 = (self.conc_end - self.ecce_start) / 1000
             cal_result.at[i, 'ecce_time(s)'] \
@@ -282,17 +283,21 @@ class ProcessData:
     def rate_of_force_ecce(self):
         """
         Function to return the rate of force development during
-            eccentric phase.
+            eccentric phase by linear regression.
         Return:
-            rate_of_f: rate of force during eccentric phase (m/s^3)
+            rate_of_f: rate of force during eccentric phase (N/s)
         """
-        # catch the time and acceleration from the eccentric phase
-        #   and get its ratio
         start = self.ecce_start
         end = self.ecce_end
-        time_diff = (end - start) / 1000
-        force_diff: float = self.acce_list[end] - self.acce_list[start]
-        rate_of_f = time_diff / force_diff
+
+        # get time and force values in eccentric phase
+        time = self.time_list[start: end]
+        force = self.force_list[start: end]
+
+        # apply linear regression and return its slope as ratio
+        regress = linregress(time, force)
+        rate_of_f = regress.slope
+
         return rate_of_f
 
     def get_peak_force(self):
