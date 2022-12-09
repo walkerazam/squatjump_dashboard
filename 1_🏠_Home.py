@@ -56,13 +56,8 @@ if uploaded_file is not None:
     col3.metric("Concentric Phase Time",
                 calculations_df.loc[int(selected_jump), 'conc_time(s)'])
 
-    # Creating a Selectbox for Table View
-    table_view = st.selectbox(
-        "View Metric's Table?",
-        ('No', 'Yes'))
-    # Conditionals
-    if table_view == 'Yes':
-        metric_df = metric_viewer(calculations_df)
+    metric_df = metric_viewer(calculations_df)
+    with st.expander("View Complete Jump Metrics"):
         # Displaying table with select rows
         st.table(metric_df.loc[["Jump Height (cm)",
                                 "Takeoff Velocity (m/s)",
@@ -75,8 +70,19 @@ if uploaded_file is not None:
                                 "Right Leg COP Displacement(cm) [Ant.-Post.]",
                                 "Left Leg COP Displacement(cm) [Med.-Lat.]",
                                 "Right Leg COP Displacement(cm) [Med.-Lat.]"]])
-    else:
-        pass
+    # Giving an option to download metrics
+    @st.cache
+    def convert_df(df):
+        # IMPORTANT: Cache the conversion to prevent computation on every rerun
+        return df.to_csv().encode('utf-8')
+    csv = convert_df(metric_viewer(calculations_df))
+    # Adding download button
+    st.download_button(
+        label="Download Jump Metrics as CSV",
+        data=csv,
+        file_name='jump_metrics.csv',
+        mime='text/csv',
+    )
 
     # Asking if a plot for groundforce should be made
     st.write("## Plots of Ground Force by Leg")
@@ -129,112 +135,105 @@ if uploaded_file is not None:
     else:
         st.caption("No Interactive Plot Selected")
 
-    # Giving an option to download metrics
-    @st.cache
-    def convert_df(df):
-        # IMPORTANT: Cache the conversion to prevent computation on every rerun
-        return df.to_csv().encode('utf-8')
-    csv = convert_df(metric_viewer(calculations_df))
-    # Adding download button
-    st.download_button(
-        label="Download Jump Metrics as CSV",
-        data=csv,
-        file_name='jump_metrics.csv',
-        mime='text/csv',
-    )
-
     # 3D Animated Plot:
+    st.write("## 3D Animation For Forces:")
     df = processed_data.copy()
     # Retrieveing DF with Position
     df = create_center_pressure_df(df)
     # Asking user for what jump to consider:
     # Asking which jump to view:
     jump = st.radio("Select which jump to view:",
-                    ('1', '2', '3'))
-    # Splitting our Dataset by the selected jump
-    df = split_by_jump(df, index_df, jump)
+                    ('None', '1', '2', '3'))
+    if jump != 'None':
+        # Splitting our Dataset by the selected jump
+        df = split_by_jump(df, index_df, jump)
 
-    # Selecting Leg Position (Left or Right)
-    selected_position = 'left'
-    df = df[df['Position'] == selected_position]
-    # Resetting index
-    df = df.reset_index(drop=True)
+        # Selecting Leg Position (Left or Right)
+        selected_position = 'left'
+        df = df[df['Position'] == selected_position]
+        # Resetting index
+        df = df.reset_index(drop=True)
 
-    # Creating plot animation
-    fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
-    # Colorbar initiation
-    norm = matplotlib.colors.Normalize()
-    norm.autoscale(df['ground_force_pt2z'])
-    cm = matplotlib.cm.cool
-    sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
-    sm.set_array([])
+        # Creating plot animation
+        fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
+        # Colorbar initiation
+        norm = matplotlib.colors.Normalize()
+        norm.autoscale(df['ground_force_pt2z'])
+        cm = matplotlib.cm.cool
+        sm = matplotlib.cm.ScalarMappable(cmap=cm, norm=norm)
+        sm.set_array([])
 
-    def get_arrow(idx):
-        """
-        This function returns unit vector arrow position for
-        plotting in a 3D space.
-        Arguments:
-            1. idx: index of the time for where plot the arrow
-        Return:
-            1. coordinates for x, y, z, and magnitude values
-                (u, v, w)
-        """
-        # x, y, and z = 0 for static start positions
-        x = 0
-        y = 0
-        z = 0
-        u = df['ground_force_pt2x'][idx]
-        v = df['ground_force_pt2y'][idx]
-        w = df['ground_force_pt2z'][idx]
-        return x, y, z, u, v, w
-    # Quiver plotting:
-    quiver = ax.quiver(*get_arrow(0), arrow_length_ratio=0.05,
-                       color=cm(norm(df['ground_force_pt2z'][0])))
-    # Plot Title:
-    plot_title = '3D Force Plot for Jump ' + str(jump) + \
-                 ' [' + str(selected_position) + ']'
-    ax.set_title(plot_title)
-    # X Axis:
-    ax.set_xlabel('X Axis')
-    ax.set_xlim(min(list(df.ground_force_pt1x) +
-                    list(df.ground_force_pt2x)) - 1,
-                max(list(df.ground_force_pt1x) +
-                    list(df.ground_force_pt2x)) + 1)
-    # Y Axis:
-    ax.set_ylabel('Y Axis')
-    ax.set_ylim(min(list(df.ground_force_pt1y) +
-                    list(df.ground_force_pt2y)) - 1,
-                max(list(df.ground_force_pt1y) +
-                    list(df.ground_force_pt2y)) + 1)
-    # Z Axis:
-    ax.set_zlabel('Force Magnitude')
-    ax.set_zlim(min(list(df.ground_force_pt1z) +
-                    list(df.ground_force_pt2z)),
-                max(list(df.ground_force_pt1z) +
-                    list(df.ground_force_pt2z)) + 1)
+        def get_arrow(idx):
+            """
+            This function returns unit vector arrow position for
+            plotting in a 3D space.
+            Arguments:
+                1. idx: index of the time for where plot the arrow
+            Return:
+                1. coordinates for x, y, z, and magnitude values
+                    (u, v, w)
+            """
+            # x, y, and z = 0 for static start positions
+            x = 0
+            y = 0
+            z = 0
+            u = df['ground_force_pt2x'][idx]
+            v = df['ground_force_pt2y'][idx]
+            w = df['ground_force_pt2z'][idx]
+            return x, y, z, u, v, w
 
-    def update(idx):
-        """
-        This function takes the index for the 3D animation
-        in order to update the arrows.
-        No returns, but updates Quiver position.
-        Arguments:
-            1. idx: the time index for the jump data.
-        """
-        # Calling on the global quiver
-        global quiver
-        # Removing the old quiver
-        quiver.remove()
-        # Replotting based on new idx
-        quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio=0.05,
-                           color=cm(norm(df['ground_force_pt2z'][idx])))
+        def update(idx):
+            """
+            This function takes the index for the 3D animation
+            in order to update the arrows.
+            No returns, but updates Quiver position.
+            Arguments:
+                1. idx: the time index for the jump data.
+            """
+            # Calling on the global quiver
+            global quiver
+            # Removing the old quiver
+            quiver.remove()
+            # Replotting based on new idx
+            quiver = ax.quiver(*get_arrow(idx), arrow_length_ratio=0.05,
+                               color=cm(norm(df['ground_force_pt2z'][idx])))
 
-    # Animation figure
-    anim = FuncAnimation(fig, update, frames=range(0, len(df), 4), interval=1)
-    # Colorbar for magnitude
-    plt.colorbar(sm, location='bottom', label='Force (N)')
-    # To show in streamlit, saving as jshtml and then showing
-    components.html(anim.to_jshtml(), height=1000)
+        # Quiver plotting:
+        quiver = ax.quiver(*get_arrow(0), arrow_length_ratio=0.05,
+                           color=cm(norm(df['ground_force_pt2z'][0])))
+        # Plot Title:
+        plot_title = '3D Force Plot for Jump ' + str(jump) + \
+                     ' [' + str(selected_position) + ']'
+        ax.set_title(plot_title)
+        # X Axis:
+        ax.set_xlabel('X Axis')
+        ax.set_xlim(min(list(df.ground_force_pt1x) +
+                        list(df.ground_force_pt2x)) - 1,
+                    max(list(df.ground_force_pt1x) +
+                        list(df.ground_force_pt2x)) + 1)
+        # Y Axis:
+        ax.set_ylabel('Y Axis')
+        ax.set_ylim(min(list(df.ground_force_pt1y) +
+                        list(df.ground_force_pt2y)) - 1,
+                    max(list(df.ground_force_pt1y) +
+                        list(df.ground_force_pt2y)) + 1)
+        # Z Axis:
+        ax.set_zlabel('Force Magnitude')
+        ax.set_zlim(min(list(df.ground_force_pt1z) +
+                        list(df.ground_force_pt2z)),
+                    max(list(df.ground_force_pt1z) +
+                        list(df.ground_force_pt2z)) + 1)
+
+        # Animation figure
+        anim = FuncAnimation(fig, update, frames=range(0, len(df), 4),
+                             interval=1)
+        # Colorbar for magnitude
+        plt.colorbar(sm, location='bottom', label='Force (N)')
+        # To show in streamlit, saving as jshtml and then showing
+        components.html(anim.to_jshtml(), height=750)
+#       left, right = st.columns(2)
+#       with left:
+#            components.html(anim.to_jshtml())
 
 else:
     st.caption("Please Upload a File Above")
