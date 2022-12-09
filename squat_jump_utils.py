@@ -267,9 +267,9 @@ def create_center_pressure_df(df):
     center_pressure_right.rename(columns={
         'ground_force1_pz': 'ground_force_pt1x',
         'ground_force1_px': 'ground_force_pt1y',
-        'ground_force2_vz': 'ground_force_pt2x',
-        'ground_force2_vx': 'ground_force_pt2y',
-        'ground_force2_vy': 'ground_force_pt2z'
+        'ground_force1_vz': 'ground_force_pt2x',
+        'ground_force1_vx': 'ground_force_pt2y',
+        'ground_force1_vy': 'ground_force_pt2z'
                                             }, inplace=True)
     center_pressure_right['ground_force_pt1z'] = [0] * \
         len(center_pressure_left)
