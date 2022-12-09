@@ -155,7 +155,8 @@ if uploaded_file is not None:
         df = df.reset_index(drop=True)
 
         # Creating plot animation
-        fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
+        fig, ax = plt.subplots(figsize=(3.5, 3.5),
+                               subplot_kw=dict(projection="3d"))
         # Colorbar initiation
         norm = matplotlib.colors.Normalize()
         norm.autoscale(df['ground_force_pt2z'])
@@ -230,10 +231,12 @@ if uploaded_file is not None:
         # Colorbar for magnitude
         plt.colorbar(sm, location='bottom', label='Force (N)')
         # To show in streamlit, saving as jshtml and then showing
-        components.html(anim.to_jshtml(), height=750)
-#       left, right = st.columns(2)
-#       with left:
-#            components.html(anim.to_jshtml())
+        # components.html(anim.to_jshtml(), height=750)
+        left, right = st.columns(2)
+        with left:
+            components.html(anim.to_jshtml(), height=750, scrolling=True)
+        with right:
+            components.html(anim.to_jshtml(), height=750, scrolling=True)
 
 else:
     st.caption("Please Upload a File Above")
