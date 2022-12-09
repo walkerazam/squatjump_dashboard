@@ -173,7 +173,7 @@ class ProcessData:
         # Creating a empty DF with columns
         cal_result = pd.DataFrame(columns=['weight(kg)', 'jump_height(cm)',
                                            'takeoff_v(m/s)',
-                                           'rate_of_f_ecce(N/s)',
+                                           'rate_of_v_acce(m/s^3)',
                                            'jump_time(s)', 'ecce_time(s)',
                                            'conc_time(s)', 'peak_force(N)',
                                            'peak_power(W)',
@@ -194,7 +194,7 @@ class ProcessData:
             height, vel = self.height_by_v()
             cal_result.at[i, 'jump_height(cm)'] = height
             cal_result.at[i, 'takeoff_v(m/s)'] = vel
-            cal_result.at[i, 'rate_of_f_ecce(N/s)'] \
+            cal_result.at[i, 'rate_of_v_acce(m/s^3)'] \
                 = self.rate_of_force_ecce()
             cal_result.at[i, 'jump_time(s)'] \
                 = (self.conc_end - self.ecce_start) / 1000
@@ -296,9 +296,9 @@ class ProcessData:
 
         # apply linear regression and return its slope as ratio
         regress = linregress(time, force)
-        rate_of_f = regress.slope
+        rate_of_force = regress.slope
 
-        return rate_of_f
+        return rate_of_force
 
     def get_peak_force(self):
         """
