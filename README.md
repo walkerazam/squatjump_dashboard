@@ -1,5 +1,6 @@
 # squatjump_dashboard
 [![Python Package using Conda](https://github.com/walkerazam/squatjump_dashboard/actions/workflows/python-package-conda.yml/badge.svg)]
+
 This repository contains files used to create the Squat Jump dashboard for CSE 583.
 
 ### How to Launch (Locally):
