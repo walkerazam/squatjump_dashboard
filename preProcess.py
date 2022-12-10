@@ -292,11 +292,11 @@ def contact_finder(force):
             start_in_air = []
             end_in_air = []
             for ii in range(len(in_air_bool)-1):
-                if in_air_bool[ii] == False and \
-                        in_air_bool[ii+1] == True:
+                if (not in_air_bool[ii]) and \
+                        (in_air_bool[ii+1]):
                     start_in_air.append(ii+1)
-                elif in_air_bool[ii] == True and \
-                        in_air_bool[ii + 1] == False:
+                elif (in_air_bool[ii]) and \
+                        (not in_air_bool[ii + 1]):
                     end_in_air.append(ii)
                 else:
                     pass
@@ -378,11 +378,11 @@ def find_static_indexes(force_prime, contact_1, contact_2,
     start_static = []
     end_static = []
     for ii in range(len(static_bool)-1):
-        if static_bool[ii] == False and \
-                static_bool[ii + 1] == True:
+        if (not static_bool[ii]) and \
+                (static_bool[ii + 1]):
             start_static.append(ii)
-        elif static_bool[ii] == True and \
-                static_bool[ii + 1] == False:
+        elif (static_bool[ii]) and \
+                (not static_bool[ii + 1]):
             end_static.append(ii)
         else:
             pass
@@ -459,10 +459,10 @@ def contact_event_finder(force, force_prime, contact_number,
 
         find_event_start = []
         for ii in range(start, eccentric_start-10):
-            if force_unloading[ii] == True and ii == 0:
+            if (force_unloading[ii]) and (ii == 0):
                 find_event_start.append(ii)
-            elif force_unloading[ii] == False and \
-                    force_unloading[ii+1] == True:
+            elif (not force_unloading[ii]) and \
+                    (force_unloading[ii+1]):
                 find_event_start.append(ii)
             else:
                 pass
@@ -481,13 +481,13 @@ def contact_event_finder(force, force_prime, contact_number,
         find_event_end = []
         find_event_start = []
         for ii in range(start, eccentric_start - 10):
-            if force_unloading[ii] == True and \
-                    force_unloading[ii + 1] == False \
-                    and ii < cutoff:
+            if (force_unloading[ii]) and \
+                    (not force_unloading[ii + 1]) \
+                    and (ii < cutoff):
                 find_event_end.append(ii)
-            elif force_unloading[ii] == False and \
-                    force_unloading[ii+1] == True \
-                    and ii > cutoff:
+            elif (not force_unloading[ii]) and \
+                    (force_unloading[ii+1]) \
+                    and (ii > cutoff):
                 find_event_start.append(ii)
             else:
                 pass
@@ -510,8 +510,8 @@ def contact_event_finder(force, force_prime, contact_number,
     elif contact_number == 4:
         find_event_end = []
         for ii in range(start+100, cutoff):
-            if force_unloading[ii] == True and \
-                    force_unloading[ii+1] == False:
+            if (force_unloading[ii]) and \
+                    (not force_unloading[ii+1]):
                 find_event_end.append(ii)
             else:
                 pass
