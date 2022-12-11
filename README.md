@@ -10,6 +10,8 @@ Please ensure you have `streamlit` installed and other necessary libraries (`pan
 Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../squatjump_dashboard) to locally launch dashboard.
 
 ### Project Structure:
+
+```bash
 .
 ├── 1_🏠_Home.py
 ├── LICENSE.md
@@ -38,6 +40,8 @@ Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../s
     └── tests
         ├── __init__.py
         └── test_squat_jump_utils.py
+ 
+```
 
 ### File Descriptions:
 
