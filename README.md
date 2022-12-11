@@ -9,7 +9,37 @@ Please ensure you have `streamlit` installed and other necessary libraries (`pan
 
 Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../squatjump_dashboard) to locally launch dashboard.
 
-### Files:
+### Project Structure:
+.
+├── 1_🏠_Home.py
+├── LICENSE.md
+├── README.md
+├── data
+│   └── ...
+├── docs
+│   ├── README.md
+│   └── design.md
+├── environment.yml
+├── pages
+│   └── 2_📑_About.py
+├── preProcess
+│   ├── __init__.py
+│   ├── preProcess.py
+│   └── tests
+├── process_data
+│   ├── __init__.py
+│   ├── process_data.py
+│   └── tests
+│       ├── __init__.py
+│       └── test_process_data.py
+└── squat_jump_utils
+    ├── __init__.py
+    ├── squat_jump_utils.py
+    └── tests
+        ├── __init__.py
+        └── test_squat_jump_utils.py
+
+### File Descriptions:
 
 1. 1_Home.py : Contains Streamlit code used to create the home/landing page for the dashboard
 2. squat_jump_utils.py : Contains helper functions utilized in 1_Home.py
