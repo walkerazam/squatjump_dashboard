@@ -10,7 +10,7 @@ Return:
 # import numpy as np
 import pandas as pd
 from scipy.stats import linregress
-from preProcess import jumpSquatPreProcess
+from squatjump_dashboard.preProcess import jumpSquatPreProcess
 
 G = 9.80665  # Constant for gravitational acceleration
 

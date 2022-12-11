@@ -14,10 +14,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 import streamlit.components.v1 as components
-from squat_jump_utils import groundforce_plot, create_COP_plot
-from squat_jump_utils import metric_viewer, create_plot_vs_time
-from squat_jump_utils import split_by_jump, create_center_pressure_df
-from process_data import process_data
+from squatjump_dashboard.squat_jump_utils import groundforce_plot, create_COP_plot
+from squatjump_dashboard.squat_jump_utils import metric_viewer, create_plot_vs_time
+from squatjump_dashboard.squat_jump_utils import split_by_jump, create_center_pressure_df
+from squatjump_dashboard.process_data import process_data
 from matplotlib.animation import FuncAnimation
 
 # Page Configurations

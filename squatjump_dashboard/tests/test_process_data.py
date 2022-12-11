@@ -5,8 +5,9 @@ This file contains unittests for the file process_data.py.
 import unittest
 import numpy as np
 import pandas as pd
-from process_data import process_data
-
+import os
+from squatjump_dashboard.process_data import process_data
+my_dir = os.path.dirname(__file__)
 G = 9.80665
 
 
@@ -20,7 +21,8 @@ class TestProcessData(unittest.TestCase):
         """
         Smoke test for process_data.py
         """
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
         process_data(data)
         print('process_data runs without exceptions, smoke test passed')
 
@@ -80,7 +82,8 @@ class TestProcessData(unittest.TestCase):
         Edge test for import data
         Functions returns errors when passed data with missing column.
         """
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
 
         # drop a column from data
         data = data.drop(['ground_force2_px'], axis=1)
@@ -97,7 +100,8 @@ class TestProcessData(unittest.TestCase):
         """
 
         # read peak force value from process_data.py
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
         result = process_data(data)
         cal_result = result[2]
         peak_actual = cal_result.at[1, 'peak_force(N)']
@@ -116,7 +120,8 @@ class TestProcessData(unittest.TestCase):
         Passed if the bias rate of COP displacement is less than 5% tolerance
         """
         # read COP displacement value from process_data.py
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
         result = process_data(data)
         cal_result = result[2]
         cop_actual = cal_result.at[1, 'cop_displace_right_x(cm)']
@@ -134,7 +139,8 @@ class TestProcessData(unittest.TestCase):
         Passed if the bias rate of COP displacement is less than 5% tolerance
         """
         # read COP displacement value from process_data.py
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
         result = process_data(data)
         cal_result = result[2]
         cop_actual = cal_result.at[1, 'cop_displace_left_z(cm)']
@@ -152,7 +158,8 @@ class TestProcessData(unittest.TestCase):
         Passed if the bias rate of jump time is less than 5% tolerance
         """
         # read jump time from index table
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
         result = process_data(data)
         index = result[1]
         start = index.iat[2, 1]
@@ -173,7 +180,8 @@ class TestProcessData(unittest.TestCase):
         Passed if the bias rate of concentric time is less than 5% tolerance
         """
         # read jump time from index table
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
         result = process_data(data)
         index = result[1]
         start = index.iat[2, 0]
@@ -194,7 +202,8 @@ class TestProcessData(unittest.TestCase):
         Passed if the bias rate of take-off velocity is less than 5% tolerance
         """
         # read take-off velocity from index table
-        data = pd.read_csv("./data/BFR007_squat_jump.csv", skiprows=6)
+        data_path = os.path.join(my_dir, "../../data/BFR007_squat_jump.csv")
+        data = pd.read_csv(data_path, skiprows=6)
         result = process_data(data)
         cal_result = result[2]
         vel_actual = cal_result.at[1, 'takeoff_v(m/s)']
