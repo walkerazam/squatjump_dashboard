@@ -1,0 +1,1 @@
+from .preProcess import jumpSquatPreProcess
