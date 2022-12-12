@@ -9,7 +9,7 @@ import unittest
 import pandas as pd
 
 from squatjump_dashboard.preProcess import jumpSquatPreProcess
-#
+
 main_path = os.path.dirname(__file__)
 data_path1 = os.path.join(main_path, "../../data/BFR007_squat_jump.csv")
 data_path2 = os.path.join(main_path, "../../data/squat_jump_error_test.csv")
