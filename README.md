@@ -41,7 +41,7 @@ Deployment uses `requirements.txt` instead of `environment.yml` to function and 
 
 ### Running Tests:
 
-Test files exist for the functions and submodules used in this project. Tests are automatically run when pushed to GitHub using github workflows. To run unittests locally, clone the repository and at the root run `python -m unittest`.
+Test files exist for the functions and submodules used in this project. Tests are automatically run when pushed to GitHub using github workflows. To run unittests locally, clone the repository and at the root run `python -m unittest discover`.
 
 ---------------------------------------
 
