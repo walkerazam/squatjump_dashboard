@@ -30,6 +30,15 @@ Run `streamlit run 1_Home.py` from root of directory after cloning (/Users/.../s
 
 ---------------------------------------
 
+### Deployment Details:
+
+This web app is deployed using `share.streamlit.io`. For deployment a seperate branch, 'deployment' was used since the build required slightly different demands. 
+
+Deployment uses `requirements.txt` instead of `environment.yml` to function and launch correctly. As a result, the deployment branch will not include `environment.yml`. Deployment also uses Python version 10 instead of Python version 7 (which was used to build the app). Due to these differences, the deployment branch is not expected to pass the workflow tests utilized in 'master' branch.
+
+
+---------------------------------------
+
 ### Running Tests:
 
 Test files exist for the functions and submodules used in this project. Tests are automatically run when pushed to GitHub using github workflows. To run unittests locally, clone the repository and at the root run `python -m unittest`.
