@@ -90,7 +90,7 @@
 **2. Utils Functions**
 
 *Description*: Python script containing utility functions to be used in data cleaning, timestamps extractions and metric calculations.  
-*Inputs*: Python Libraries  
+*Inputs*: Python Library functions
 *Outputs*: Function returns, integers or floats  
 
 **3. Raw Data** 
@@ -124,7 +124,7 @@
 **7. Visualization Functions**
 
 *Description*: Python and JSHTML script to create the visualizations and animations.  
-*Inputs*: Python libraries  
+*Inputs*: Python library functions
 *Outpus*: Function returns, figure object or pandas dataframe  
 
 **8. Streamlit**
