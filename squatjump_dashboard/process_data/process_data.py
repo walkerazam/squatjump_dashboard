@@ -1,16 +1,16 @@
 """
 process_data.py
-Import processed_data dataframe from preprocess.py and generate
+Import processed_data dataframe from clean_data.py and generate
     a dataframe for calculation results of each jump
 Return:
-    1. data - processed data from preprocess.py
-    2. index - index table from preprocess.py
+    1. data - processed data from clean_data.py
+    2. index - index table from clean_data.py
     3. calculations - calculation results of each jump
 """
 # import numpy as np
 import pandas as pd
 from scipy.stats import linregress
-from squatjump_dashboard.preProcess import jumpSquatPreProcess
+from squatjump_dashboard.clean_data import clean_data
 
 G = 9.80665  # Constant for gravitational acceleration
 
@@ -24,8 +24,8 @@ def process_data(data):
     Argument:
         1. data: the raw data containing squat jump information.
     Returns:
-        1. data - processed data from preprocess.py
-        2. index - index table from preprocess.py
+        1. data - processed data from clean_data.py
+        2. index - index table from clean_data.py
         3. calculations - calculation results of each jump
     """
 
@@ -93,13 +93,13 @@ class ProcessData:
 
     def __init__(self, data):
         """
-        Initialize Variables and import data from jumpSquatPreProcess.
+        Initialize Variables and import data from clean_data.
         Argument:
             data: the raw data containing squat jump information.
         """
 
-        # Get processed data, indexes and mass from preprocess.py
-        self.data, self.index, self.mass = jumpSquatPreProcess(data)
+        # Get processed data, indexes and mass from clean_data.py
+        self.data, self.index, self.mass = clean_data(data)
 
         # Initial default jump = 1
         self.jump = 1

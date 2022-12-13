@@ -1,8 +1,8 @@
 """
-preProcess.py
-Pre-processes data selected by user on streamlit dash.
+clean_data.py
+Runs, cleans, and identifies key points through raw data selected by user on streamlit dash.
 Returns:
-    1. preProcessedData: pre-processed/cleaned dataframe (df)
+    1. pre_processed_data: pre-processed/cleaned dataframe (df)
     2. index_pd: indexes for every jump and their phases (df)
     3. weight: patient mass/weight (float)
 
@@ -13,17 +13,17 @@ from scipy import integrate
 from scipy.signal import butter, filtfilt
 
 
-def jumpSquatPreProcess(data):
+def clean_data(data):
     """
     This is the main function that takes in a passed dataframe of patient jumps
-    and does pre-processing/cleaning required to calculate jump
+    and does the cleaning required to calculate jump
     metrics. It returns the cleaned data, along with indexes
     for time (s) per jump phase, and the patient's mass.
 
     Arguments:
         1. data (df): the raw squat jump dataframe containing jump data
     Returns:
-        1. preProcessedData (df): pre-processed/cleaned dataframe
+        1. pre_processed_data (df): pre-processed/cleaned dataframe
         2. index_pd (df): indexes for every jump and their phases
         3. weight (float): patient mass/weight
     """
@@ -237,8 +237,8 @@ def jumpSquatPreProcess(data):
                                              'Landing Phase'])
 
     # Return
-    preProcessedData = data
-    return preProcessedData, index_pd, weight
+    pre_processed_data = data
+    return pre_processed_data, index_pd, weight
 
 
 def butter_filter(column, cutoff, fs, order):

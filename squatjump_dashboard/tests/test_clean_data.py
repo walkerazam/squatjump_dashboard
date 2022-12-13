@@ -1,6 +1,6 @@
 """
-test_preProcess.py
-This file contains unittests for preProcess
+test_clean_data.py
+This file contains unittests for clean_data
 """
 
 import os
@@ -8,22 +8,22 @@ import unittest
 
 import pandas as pd
 
-from squatjump_dashboard.preProcess import jumpSquatPreProcess
+from squatjump_dashboard.clean_data import clean_data
 
 main_path = os.path.dirname(__file__)
 data_path1 = os.path.join(main_path, "../../data/BFR007_squat_jump.csv")
 data_path2 = os.path.join(main_path, "../../data/squat_jump_error_test.csv")
 test_df1 = pd.read_csv(data_path1, header=6)
-preProcessedData, index_pd, weight = jumpSquatPreProcess(test_df1)
+pre_processed_data, index_pd, weight = clean_data(test_df1)
 
 
-class TestpreProcess(unittest.TestCase):
+class Testclean_data(unittest.TestCase):
     def test_smoke(self):
         """
-        Makes sure preProcess runs
+        Makes sure clean_data runs
         """
         test_df2 = pd.read_csv(data_path1, header=6)
-        jumpSquatPreProcess(test_df2)
+        clean_data(test_df2)
         return
 
     def test_col_number(self):
@@ -33,7 +33,7 @@ class TestpreProcess(unittest.TestCase):
         test_df3 = pd.read_csv(data_path1, header=6)
         test_df3 = test_df3.drop(['time'], axis=1)
         with self.assertRaises(ValueError):
-            jumpSquatPreProcess(test_df3)
+            clean_data(test_df3)
 
     def test_check_col_name(self):
         """
@@ -44,7 +44,7 @@ class TestpreProcess(unittest.TestCase):
                             columns={'ground_force1_vx': 'ground_force1_vb'},
                             inplace=True)
         with self.assertRaises(Exception):
-            jumpSquatPreProcess(test_df4)
+            clean_data(test_df4)
 
     def test_time(self):
         """
@@ -56,7 +56,7 @@ class TestpreProcess(unittest.TestCase):
             new_time.append(ii)
         test_df5['time'] = new_time
         with self.assertRaises(ValueError):
-            jumpSquatPreProcess(test_df5)
+            clean_data(test_df5)
 
     def test_number_jumps(self):
         """
@@ -66,7 +66,7 @@ class TestpreProcess(unittest.TestCase):
         test_df6['ground_force1_vy'] = 120
         test_df6['ground_force2_vy'] = 120
         with self.assertRaises(RuntimeError):
-            jumpSquatPreProcess(test_df6)
+            clean_data(test_df6)
 
     def test_unidentified_end(self):
         """
@@ -74,7 +74,7 @@ class TestpreProcess(unittest.TestCase):
         """
         test_df7 = pd.read_csv(data_path2, header=6)
         with self.assertRaises(ValueError):
-            jumpSquatPreProcess(test_df7)
+            clean_data(test_df7)
 
     def test_check_indexes(self):
         """
@@ -115,7 +115,7 @@ class TestpreProcess(unittest.TestCase):
             col_string_end = 'Jump ' + str(ii) + ' End'
             start = index_pd[col_string_start][0]
             end = index_pd[col_string_end][0]
-            max_force = (preProcessedData['ground_force_totaly']
+            max_force = (pre_processed_data['ground_force_totaly']
                                          [start:end].max())
 
             if ii == 1:
@@ -135,7 +135,7 @@ class TestpreProcess(unittest.TestCase):
             col_string_end = 'Jump ' + str(ii) + ' End'
             start = index_pd[col_string_start][0]
             end = index_pd[col_string_end][2]
-            min_force = (preProcessedData['ground_force_totaly']
+            min_force = (pre_processed_data['ground_force_totaly']
                                          [start:end].min())
 
             if ii == 1:
