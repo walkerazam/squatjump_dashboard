@@ -102,21 +102,21 @@
 **4. Clean Data**
 
 *Description*: A filtered, catogirized and integrated dataframe ready for metric calculation.  
-*Inputs*: Util functions, python script  
+*Inputs*: Utils functions, python script  
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Raw data, a pandas dataframe  
 *Outputs*: Clean Data, a pandas dataframe  
 
 **5. Index table**
 
 *Description*: A dataframe which store the timestamps for each jump, created from Clean Data.  
-*Inputs*: Util functions, python script  
+*Inputs*: Utils functions, python script  
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Clean data, a pandas dataframe  
 *Outpus*: Index table, a pandas dataframe  
 
 **6. Calculation Results** 
 
 *Description*: A DataFrame containing the calculated metrics to be used for visualization, created from Clean Data.  
-*Inputs*: Util functions, python script  
+*Inputs*: Utils functions, python script  
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Clean data, a pandas dataframe   
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Index table, a pandas dataframe  
 *Outpus*: Calculation results, a pandas dataframe  
@@ -148,7 +148,7 @@
 *Inputs*: Keyboard commends  
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Visulization results from Streamlit  
 *Outputs*: Information to show on screen  
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Downloadable file, a CSV file  
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Downloadable file, a CSV file  
 
 **11. Screen**
 
