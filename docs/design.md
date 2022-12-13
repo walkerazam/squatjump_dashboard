@@ -32,7 +32,7 @@
 
 ## Use Cases of Functional Design
 
-![Alt text](./Interaction_Diagram.png?raw=true)
+![Alt text](./Interaction Diagram.png?raw=true)
 
 ### Use Case 1: Data Analysis Request
 
