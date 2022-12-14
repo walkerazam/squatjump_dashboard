@@ -1,53 +1,6 @@
-# Design:
+# Component Specificationn
 
-## Use Cases of Functional Design
-
-![Alt text](./Interaction_Diagram1.png?raw=true)
-
-### Use Case 1: Data Analysis Request
-
-**User story**: Dr. Jane wants to analyze the recovery progress of a new patient.  
-
-*User Action:*    
-&ensp;&ensp;&ensp;&ensp;Upload a CSV jump data.  
-*System Response:*  
-&ensp;&ensp;&ensp;&ensp;[if correct] Create a new patient data.  
-&ensp;&ensp;&ensp;&ensp;[if incorrect] Pop up an exception message.  
-
-*User Action:*  
-&ensp;&ensp;&ensp;&ensp;Select the new patient data to analyze.  
-*System Response:*  
-&ensp;&ensp;&ensp;&ensp;Presence the visualization of the patient.  
-
-*User Action:*  
-&ensp;&ensp;&ensp;&ensp;Select a certain jump or diagram to take a careful look.  
-*System Response:*  
-&ensp;&ensp;&ensp;&ensp;Show the image or animation of the request.  
-
-
-### Use Case 2: Documentation Request
-
-**User story**: John received a large among of new data and want to gather the analysis results for documentation.
-
-*User Action:*  
-&ensp;&ensp;&ensp;&ensp;Upload a new CSV jump data.  
-*System Response:*  
-&ensp;&ensp;&ensp;&ensp;[if correct] Create a new patient data.  
-&ensp;&ensp;&ensp;&ensp;[if incorrect] Pop up an exception message.  
-
-*User Action:*  
-&ensp;&ensp;&ensp;&ensp;Check the corectness of the data.  
-*System Response:*  
-&ensp;&ensp;&ensp;&ensp;Presence the visualization of the processed data.  
-
-*User Action:*  
-&ensp;&ensp;&ensp;&ensp;Download the analysis results.  
-*System Response:*  
-&ensp;&ensp;&ensp;&ensp;Generate a downloadable CSV file.  
-
-
-
-## Components
+## Software Components
 
 ### List of Components
 
@@ -125,3 +78,49 @@
 *Description*: For users to view the visualizations.  
 *Inputs*: Information from dash board  
 *Outpus*: Visual display  
+
+## Interactions to accomplish use cases
+
+### Use Case 1: Data Analysis Request
+
+**User story**: Dr. Jane wants to analyze the recovery progress of a new patient.  
+
+*User Action:*    
+&ensp;&ensp;&ensp;&ensp;Upload a CSV jump data.  
+*System Response:*  
+&ensp;&ensp;&ensp;&ensp;[if correct] Create a new patient data.  
+&ensp;&ensp;&ensp;&ensp;[if incorrect] Pop up an exception message.  
+
+*User Action:*  
+&ensp;&ensp;&ensp;&ensp;Select the new patient data to analyze.  
+*System Response:*  
+&ensp;&ensp;&ensp;&ensp;Presence the visualization of the patient.  
+
+*User Action:*  
+&ensp;&ensp;&ensp;&ensp;Select a certain jump or diagram to take a careful look.  
+*System Response:*  
+&ensp;&ensp;&ensp;&ensp;Show the image or animation of the request.  
+
+### Use Case 2: Documentation Request
+
+**User story**: John received a large among of new data and want to gather the analysis results for documentation.
+
+*User Action:*  
+&ensp;&ensp;&ensp;&ensp;Upload a new CSV jump data.  
+*System Response:*  
+&ensp;&ensp;&ensp;&ensp;[if correct] Create a new patient data.  
+&ensp;&ensp;&ensp;&ensp;[if incorrect] Pop up an exception message.  
+
+*User Action:*  
+&ensp;&ensp;&ensp;&ensp;Check the corectness of the data.  
+*System Response:*  
+&ensp;&ensp;&ensp;&ensp;Presence the visualization of the processed data.  
+
+*User Action:*  
+&ensp;&ensp;&ensp;&ensp;Download the analysis results.  
+*System Response:*  
+&ensp;&ensp;&ensp;&ensp;Generate a downloadable CSV file.  
+
+## Preliminary Plan
+
+![Alt text](./Interaction_Diagram1.png?raw=true)
