@@ -1,4 +1,4 @@
-# Component Specificationn
+# Component Specification
 
 ## Software Components
 
