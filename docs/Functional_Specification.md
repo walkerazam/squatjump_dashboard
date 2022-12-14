@@ -1,11 +1,13 @@
-## Background:
+# Functional Specification
+
+## Background
 
 Computing metrics from movement from a subset of human subjects can be difficult as all humans have their own habitual movement patterns. This can go for any type of movement (running, jumping, throwing, etc.). In some cases, calculating these metrics may require a manual interface to select the exact range of data to analyze. For this project, the motivation was to configure a web application that allows users to analyze force data derived from squat jumps with minimal to little interface from the user. This means the program should be able to identify all critical events the user requires. In addition, because the data used was taken from patients recovering from ACL reconstruction, the users identified were not required to have any coding knowledge whatsover.
 
 ## Data Sources
 The only data required to run this program is force plate data in a csv format. To help create this program, unidentified squat jump data taken from a blood-flow restriction study was used.
 
-## User Types
+## User Profile and Use Cases
 
 ### User Type 1: Dr. Jane (Main User)
 
