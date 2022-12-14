@@ -79,7 +79,7 @@
 *Inputs*: Information from dash board  
 *Outpus*: Visual display  
 
-## Interactions to accomplish use cases
+## Interactions To Accomplish Use Cases
 
 ### Use Case 1: Data Analysis Request
 
