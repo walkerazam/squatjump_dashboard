@@ -90,16 +90,41 @@
 *System Response:*  
 &ensp;&ensp;&ensp;&ensp;[if correct] Create a new patient data.  
 &ensp;&ensp;&ensp;&ensp;[if incorrect] Pop up an exception message.  
+*Component In Use:*  
+&ensp;&ensp;&ensp;&ensp;Keyboard  
+&ensp;&ensp;&ensp;&ensp;Utils Functions  
+&ensp;&ensp;&ensp;&ensp;Raw Data  
+&ensp;&ensp;&ensp;&ensp;Clean Data  
+&ensp;&ensp;&ensp;&ensp;Streamlit  
+&ensp;&ensp;&ensp;&ensp;The Dashboard  
+&ensp;&ensp;&ensp;&ensp;Screen  
 
 *User Action:*  
 &ensp;&ensp;&ensp;&ensp;Select the new patient data to analyze.  
 *System Response:*  
 &ensp;&ensp;&ensp;&ensp;Presence the visualization of the patient.  
+*Component In Use:*  
+&ensp;&ensp;&ensp;&ensp;Keyboard  
+&ensp;&ensp;&ensp;&ensp;Calculation Results  
+&ensp;&ensp;&ensp;&ensp;Visualization Functions  
+&ensp;&ensp;&ensp;&ensp;Streamlit  
+&ensp;&ensp;&ensp;&ensp;The Dashboard  
+&ensp;&ensp;&ensp;&ensp;Screen  
+
 
 *User Action:*  
 &ensp;&ensp;&ensp;&ensp;Select a certain jump or diagram to take a careful look.  
 *System Response:*  
 &ensp;&ensp;&ensp;&ensp;Show the image or animation of the request.  
+*Component In Use:*  
+&ensp;&ensp;&ensp;&ensp;Keyboard  
+&ensp;&ensp;&ensp;&ensp;Index Table  
+&ensp;&ensp;&ensp;&ensp;Calculation Results  
+&ensp;&ensp;&ensp;&ensp;Visualization Functions  
+&ensp;&ensp;&ensp;&ensp;Streamlit  
+&ensp;&ensp;&ensp;&ensp;The Dashboard  
+&ensp;&ensp;&ensp;&ensp;Screen  
+
 
 ### Use Case 2: Documentation Request
 
@@ -110,16 +135,37 @@
 *System Response:*  
 &ensp;&ensp;&ensp;&ensp;[if correct] Create a new patient data.  
 &ensp;&ensp;&ensp;&ensp;[if incorrect] Pop up an exception message.  
+*Component In Use:*  
+&ensp;&ensp;&ensp;&ensp;Keyboard  
+&ensp;&ensp;&ensp;&ensp;Utils Functions  
+&ensp;&ensp;&ensp;&ensp;Raw Data  
+&ensp;&ensp;&ensp;&ensp;Clean Data  
+&ensp;&ensp;&ensp;&ensp;Streamlit  
+&ensp;&ensp;&ensp;&ensp;The Dashboard  
+&ensp;&ensp;&ensp;&ensp;Screen  
 
 *User Action:*  
 &ensp;&ensp;&ensp;&ensp;Check the corectness of the data.  
 *System Response:*  
 &ensp;&ensp;&ensp;&ensp;Presence the visualization of the processed data.  
+*Component In Use:*  
+&ensp;&ensp;&ensp;&ensp;Keyboard  
+&ensp;&ensp;&ensp;&ensp;Calculation Results  
+&ensp;&ensp;&ensp;&ensp;Visualization Functions  
+&ensp;&ensp;&ensp;&ensp;Streamlit  
+&ensp;&ensp;&ensp;&ensp;The Dashboard  
+&ensp;&ensp;&ensp;&ensp;Screen  
 
 *User Action:*  
 &ensp;&ensp;&ensp;&ensp;Download the analysis results.  
 *System Response:*  
 &ensp;&ensp;&ensp;&ensp;Generate a downloadable CSV file.  
+*Component In Use:*  
+&ensp;&ensp;&ensp;&ensp;Keyboard  
+&ensp;&ensp;&ensp;&ensp;Calculation Results  
+&ensp;&ensp;&ensp;&ensp;Streamlit  
+&ensp;&ensp;&ensp;&ensp;The Dashboard  
+&ensp;&ensp;&ensp;&ensp;Screen  
 
 ## Preliminary Plan
 
