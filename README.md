@@ -5,6 +5,12 @@
 
 This repository contains files used to create the Squat Jump dashboard for CSE 583 (Fall 2022)
 
+---------------------------------------
+### Web App on Streamlit:
+[ACL Squat Jump Analysis](https://walkerazam-squatjump-dashboard-1--home-deployment-build-9t4zjn.streamlit.app/)
+
+---------------------------------------
+
 ### Project Information:
 
 **Abstract**:
